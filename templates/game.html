@@ -60,6 +60,9 @@
                     <div class="card-header">
                         <h4>{{ card.name }}</h4>
                         {% include 'icons/' + card.icon + '.svg' %}
+                        <div class="icon-template d-none" data-icon="{{ card.icon }}">
+                            {% include 'icons/' + card.icon + '.svg' %}
+                        </div>
                     </div>
                     <div class="card-stats">
                         {% if card.thrust %}
@@ -84,7 +87,7 @@
         <!-- 選択したカード -->
         <div class="mt-4">
             <h3>選択したカード</h3>
-            <div class="row">
+            <div class="row selected-cards">
                 {% for card in hand %}
                 <div class="col-md-6 mb-4">
                     <div class="game-card">

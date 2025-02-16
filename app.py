@@ -139,7 +139,7 @@ def select_card(card_type, card_id):
 
     # 同じ種類のカードを探して置き換え
     for i, card in enumerate(hand):
-        # カードの種類を判定（例: 'e1' -> 'engines', 'fa1' -> 'fairings'）
+        # カードの種類を判定
         current_type = None
         if card['id'].startswith('e'):
             current_type = 'engines'
@@ -156,7 +156,12 @@ def select_card(card_type, card_id):
             session['selected_cards'] = session.get('selected_cards', {})
             session['selected_cards'][card_type] = card_id
             session.modified = True
-            return jsonify({'success': True})
+            # カードの詳細情報も返す
+            return jsonify({
+                'success': True,
+                'card': selected_card,
+                'replaced_index': i
+            })
 
     return jsonify({'error': 'Card type not found in hand'}), 404
 

@@ -1,17 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
     // 推力と重量の表示を更新する関数
     function updateStats() {
-        const hand = Array.from(document.querySelectorAll('.game-card')).map(card => {
+        const selectedCards = document.querySelectorAll('.selected-cards .game-card');
+        const totalThrust = Array.from(selectedCards).reduce((sum, card) => {
             const thrustEl = card.querySelector('.card-stats p:first-child');
-            const weightEl = card.querySelector('.card-stats p:nth-child(2)');
-            return {
-                thrust: thrustEl ? parseInt(thrustEl.textContent.match(/\d+/)[0]) : 0,
-                weight: parseInt(weightEl.textContent.match(/\d+/)[0])
-            };
-        });
+            return sum + (thrustEl ? parseInt(thrustEl.textContent.match(/\d+/)[0]) : 0);
+        }, 0);
 
-        const totalThrust = hand.reduce((sum, card) => sum + card.thrust, 0);
-        const totalWeight = hand.reduce((sum, card) => sum + card.weight, 0);
+        const totalWeight = Array.from(selectedCards).reduce((sum, card) => {
+            const weightEl = card.querySelector('.card-stats p:nth-child(2)');
+            return sum + parseInt(weightEl.textContent.match(/\d+/)[0]);
+        }, 0);
+
         const requiredThrust = parseInt(document.querySelector('#required-thrust-bar span').textContent);
 
         // プログレスバーの更新
@@ -53,6 +53,28 @@ document.addEventListener('DOMContentLoaded', function() {
                         this.classList.add('btn-selected');
                         this.textContent = '選択済み';
 
+                        // 選択したカードを更新
+                        const selectedCardContainer = document.querySelector('.selected-cards');
+                        const cardElements = selectedCardContainer.querySelectorAll('.game-card');
+                        const cardToUpdate = cardElements[data.replaced_index];
+
+                        // カードの内容を更新
+                        cardToUpdate.querySelector('h4').textContent = data.card.name;
+                        const statsDiv = cardToUpdate.querySelector('.card-stats');
+                        let statsHtml = '';
+                        if (data.card.thrust) {
+                            statsHtml += `<p><i class="fas fa-rocket"></i> 推力: ${data.card.thrust}kN</p>`;
+                        }
+                        statsHtml += `<p><i class="fas fa-weight-hanging"></i> 重量: ${data.card.weight}kN</p>`;
+                        if (data.card.points) {
+                            statsHtml += `<p><i class="fas fa-star"></i> ポイント: ${data.card.points}</p>`;
+                        }
+                        statsDiv.innerHTML = statsHtml;
+
+                        cardToUpdate.querySelector('.card-description').textContent = data.card.description;
+                        cardToUpdate.querySelector('svg').outerHTML = document.querySelector(`[data-icon="${data.card.icon}"]`).outerHTML;
+
+                        // 推力と重量の表示を更新
                         updateStats();
                     } else {
                         alert('カードの選択に失敗しました');
