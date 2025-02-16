@@ -70,14 +70,23 @@ def new_game():
     if '_id' not in session:
         session['_id'] = os.urandom(16).hex()
 
-    # 新しいゲームセッションを作成
-    game_session = GameSession(
-        session_id=session.get('_id'),
-        score=0,
-        round=1
-    )
-    db.session.add(game_session)
-    db.session.commit()
+    # 既存のゲームセッションを確認
+    game_session = GameSession.query.filter_by(session_id=session.get('_id')).first()
+
+    if game_session:
+        # 既存のセッションをリセット
+        game_session.score = 0
+        game_session.round = 1
+        db.session.commit()
+    else:
+        # 新しいゲームセッションを作成
+        game_session = GameSession(
+            session_id=session.get('_id'),
+            score=0,
+            round=1
+        )
+        db.session.add(game_session)
+        db.session.commit()
 
     session['score'] = 0
     session['round'] = 1
