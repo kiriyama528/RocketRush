@@ -92,6 +92,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        // カードマーケットの選択状態をリセット
+                        if (data.removed_type) {
+                            document.querySelectorAll(`.card-${data.removed_type} .card-select`).forEach(btn => {
+                                btn.classList.remove('btn-selected');
+                                btn.textContent = '選択';
+                            });
+                        }
                         location.reload();
                     } else {
                         alert('カードの取り外しに失敗しました');

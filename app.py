@@ -168,22 +168,26 @@ def select_card(card_type, card_id):
 @app.route('/remove_card/<card_id>')
 def remove_card(card_id):
     hand = session.get('hand', [])
+    selected_cards = session.get('selected_cards', {})
 
     # カードを探して基本装備に置き換え
     for i, card in enumerate(hand):
         if card['id'] == card_id:
             card_type = None
-            for type_name, cards in DEFAULT_CARDS.items(): #Corrected this line to use DEFAULT_CARDS instead of CARDS
+            for type_name, default_card in DEFAULT_CARDS.items():
                 if card['id'].startswith(type_name[0]):
                     card_type = type_name
                     break
 
             if card_type:
-                default_card = DEFAULT_CARDS[card_type] #Simplified this line
-                hand[i] = default_card
+                hand[i] = DEFAULT_CARDS[card_type]
                 session['hand'] = hand
+                # 選択状態をリセット
+                if card_type in selected_cards:
+                    del selected_cards[card_type]
+                session['selected_cards'] = selected_cards
                 session.modified = True
-                return jsonify({'success': True})
+                return jsonify({'success': True, 'removed_type': card_type})
 
     return jsonify({'error': 'Card not found'}), 404
 
