@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <!-- ミッション情報 -->
+    <div class="col-md-4">
+        <div class="mission-card">
+            <h3>現在のミッション</h3>
+            <p>{{ mission.name }}</p>
+            <p>必要推力: {{ mission.required_thrust }}kN</p>
+            <p>獲得ポイント: {{ mission.points }}点</p>
+        </div>
+        
+        <div class="scoreboard">
+            <h3>スコア情報</h3>
+            <p>現在のスコア: {{ score }}点</p>
+            <p>ラウンド: {{ round }}/5</p>
+        </div>
+    </div>
+
+    <!-- カードマーケット -->
+    <div class="col-md-8">
+        <h3>カードマーケット</h3>
+        <div class="row">
+            {% for card_type, card in market.items() %}
+            <div class="col-md-6 mb-3">
+                <div class="game-card">
+                    <div class="card-header">
+                        <h4>{{ card.name }}</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if card.thrust %}
+                        <p>推力: {{ card.thrust }}kN</p>
+                        {% endif %}
+                        <p>重量: {{ card.weight }}kN</p>
+                        <p class="text-muted">{{ card.description }}</p>
+                        <button class="btn btn-primary card-select"
+                                data-card-type="{{ card_type }}"
+                                data-card-id="{{ card.id }}">
+                            選択
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- 手持ちカード -->
+        <div class="mt-4">
+            <h3>選択したカード</h3>
+            <div class="row">
+                {% for card in hand %}
+                <div class="col-md-6 mb-3">
+                    <div class="game-card">
+                        <h4>{{ card.name }}</h4>
+                        {% if card.thrust %}
+                        <p>推力: {{ card.thrust }}kN</p>
+                        {% endif %}
+                        <p>重量: {{ card.weight }}kN</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 発射ボタン -->
+        <div class="text-center mt-4">
+            <button id="launch-button" class="btn btn-danger btn-lg">
+                ロケットを発射！
+            </button>
+        </div>
+
+        <!-- 結果表示エリア -->
+        <div id="launch-result" class="mt-4"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/game.js') }}"></script>
+{% endblock %}

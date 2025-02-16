@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+        <h1 class="display-4 mb-4">ロケット建造カードゲーム</h1>
+        <p class="lead mb-4">
+            推力と重量のバランスを考えながら、ミッションをクリアしよう！
+        </p>
+        <div class="mb-4">
+            <a href="{{ url_for('new_game') }}" class="btn btn-primary btn-lg">
+                ゲームを始める
+            </a>
+        </div>
+        
+        <div class="card bg-dark">
+            <div class="card-body">
+                <h2>ゲームルール</h2>
+                <ul class="list-unstyled text-start">
+                    <li>1. カードを選んでロケットを組み立てる</li>
+                    <li>2. 推力が総重量を上回るように設計する</li>
+                    <li>3. ミッションの要求推力を達成する</li>
+                    <li>4. 成功するとポイントを獲得！</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
