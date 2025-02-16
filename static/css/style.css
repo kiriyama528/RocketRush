@@ -95,3 +95,127 @@
 .card-payloads {
     border-left: 4px solid var(--bs-success);
 }
+
+/* 推力と重量の表示 */
+.stats-display {
+    margin-top: 1rem;
+}
+
+.progress-container {
+    margin-bottom: 1rem;
+}
+
+.progress {
+    height: 25px;
+    background-color: var(--bs-dark);
+    border: 1px solid var(--bs-border-color);
+}
+
+.progress-bar {
+    transition: width 0.3s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-bar span {
+    position: absolute;
+    color: white;
+    font-size: 0.9rem;
+}
+
+/* ロケットアニメーション */
+.rocket {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 120px;
+    transition: transform 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rocket-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.body {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 80px;
+    background: var(--bs-light);
+    border-radius: 50% 50% 0 0;
+}
+
+.fin {
+    position: absolute;
+    bottom: 0;
+    width: 20px;
+    height: 30px;
+    background: var(--bs-danger);
+}
+
+.fin-left {
+    left: 0;
+    transform: skew(30deg);
+}
+
+.fin-right {
+    right: 0;
+    transform: skew(-30deg);
+}
+
+.window {
+    position: absolute;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background: var(--bs-info);
+    border-radius: 50%;
+}
+
+.exhaust-flame {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 15px;
+    height: 30px;
+    background: var(--bs-warning);
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    animation: flame 0.2s infinite;
+}
+
+@keyframes flame {
+    0% { height: 30px; }
+    50% { height: 40px; }
+    100% { height: 30px; }
+}
+
+.launch-success {
+    animation: launch-success 2s forwards;
+}
+
+.launch-failure {
+    animation: launch-failure 1s forwards;
+}
+
+@keyframes launch-success {
+    0% { transform: translateY(0) translateX(-50%); }
+    100% { transform: translateY(-1000px) translateX(-50%); }
+}
+
+@keyframes launch-failure {
+    0% { transform: translateY(0) translateX(-50%) rotate(0deg); }
+    25% { transform: translateY(-100px) translateX(-30%) rotate(15deg); }
+    50% { transform: translateY(-50px) translateX(-70%) rotate(-15deg); }
+    100% { transform: translateY(0) translateX(-50%) rotate(0deg); }
+}

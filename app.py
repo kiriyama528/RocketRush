@@ -98,6 +98,7 @@ def new_game():
     session['hand'] = list(DEFAULT_CARDS.values())
     session['market'] = _generate_market()
     session['current_mission'] = random.choice(MISSIONS)
+    session['selected_cards'] = {} # Initialize selected_cards
     return redirect(url_for('game'))
 
 @app.route('/game')
@@ -109,7 +110,8 @@ def game():
                          hand=session['hand'],
                          mission=session['current_mission'],
                          score=session['score'],
-                         round=session['round'])
+                         round=session['round'],
+                         selected_cards=session.get('selected_cards',{}))
 
 def _generate_market():
     market = {}
@@ -137,17 +139,26 @@ def select_card(card_type, card_id):
 
     # 同じ種類のカードを探して置き換え
     for i, card in enumerate(hand):
-        if card['id'].startswith(card_type[0]):  # IDの先頭文字で種類を判断
+        # カードの種類を判定（例: 'e1' -> 'engines', 'fa1' -> 'fairings'）
+        current_type = None
+        if card['id'].startswith('e'):
+            current_type = 'engines'
+        elif card['id'].startswith('f'):
+            current_type = 'fuel'
+        elif card['id'].startswith('fa'):
+            current_type = 'fairings'
+        elif card['id'].startswith('p'):
+            current_type = 'payloads'
+
+        if current_type == card_type:
             hand[i] = selected_card
             session['hand'] = hand
+            session['selected_cards'] = session.get('selected_cards', {})
+            session['selected_cards'][card_type] = card_id
             session.modified = True
             return jsonify({'success': True})
 
-    # 新しいカードを追加
-    hand.append(selected_card)
-    session['hand'] = hand
-    session.modified = True
-    return jsonify({'success': True})
+    return jsonify({'error': 'Card type not found in hand'}), 404
 
 @app.route('/remove_card/<card_id>')
 def remove_card(card_id):
@@ -157,13 +168,13 @@ def remove_card(card_id):
     for i, card in enumerate(hand):
         if card['id'] == card_id:
             card_type = None
-            for type_name, cards in CARDS.items():
+            for type_name, cards in DEFAULT_CARDS.items(): #Corrected this line to use DEFAULT_CARDS instead of CARDS
                 if card['id'].startswith(type_name[0]):
                     card_type = type_name
                     break
 
             if card_type:
-                default_card = next(c for c in CARDS[card_type] if c.get('is_default'))
+                default_card = DEFAULT_CARDS[card_type] #Simplified this line
                 hand[i] = default_card
                 session['hand'] = hand
                 session.modified = True
@@ -195,10 +206,11 @@ def launch_rocket():
         game_session.round = session['round']
         db.session.commit()
 
-    # 次のラウンドの準備
-    session['hand'] = []
+    # 次のラウンドの準備（基本装備を初期化）
+    session['hand'] = list(DEFAULT_CARDS.values())
     session['market'] = _generate_market()
     session['current_mission'] = random.choice(MISSIONS)
+    session['selected_cards'] = {}  # 選択状態をリセット
     session.modified = True
 
     return jsonify({

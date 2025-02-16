@@ -16,6 +16,38 @@
             <p>現在のスコア: {{ score }}点</p>
             <p>ラウンド: {{ round }}/5</p>
         </div>
+
+        <!-- 推力と重量のグラフィカル表示 -->
+        <div class="stats-display card bg-dark mb-4">
+            <div class="card-body">
+                <h4>ロケットの状態</h4>
+                <div class="progress-container mb-3">
+                    <label>総推力</label>
+                    <div class="progress">
+                        <div id="thrust-bar" class="progress-bar bg-success" role="progressbar" style="width: 0%">
+                            <span id="thrust-value">0 kN</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress-container mb-3">
+                    <label>総重量</label>
+                    <div class="progress">
+                        <div id="weight-bar" class="progress-bar bg-danger" role="progressbar" style="width: 0%">
+                            <span id="weight-value">0 kN</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <label>必要推力</label>
+                    <div class="progress">
+                        <div id="required-thrust-bar" class="progress-bar bg-info" role="progressbar" 
+                             style="width: {{ (mission.required_thrust / 200) * 100 }}%">
+                            <span>{{ mission.required_thrust }} kN</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- カードマーケット -->
@@ -39,10 +71,10 @@
                         {% endif %}
                     </div>
                     <p class="card-description">{{ card.description }}</p>
-                    <button class="btn btn-primary card-select w-100"
+                    <button class="btn btn-primary card-select w-100 {% if session.get('selected_cards', {}).get(card_type) == card.id %}btn-selected{% endif %}"
                             data-card-type="{{ card_type }}"
                             data-card-id="{{ card.id }}">
-                        選択
+                        {% if session.get('selected_cards', {}).get(card_type) == card.id %}選択済み{% else %}選択{% endif %}
                     </button>
                 </div>
             </div>
@@ -87,6 +119,19 @@
             <button id="launch-button" class="btn btn-danger btn-lg">
                 <i class="fas fa-rocket"></i> ロケットを発射！
             </button>
+        </div>
+
+        <!-- ロケットアニメーション -->
+        <div id="rocket-animation" class="d-none">
+            <div class="rocket">
+                <div class="rocket-body">
+                    <div class="body"></div>
+                    <div class="fin fin-left"></div>
+                    <div class="fin fin-right"></div>
+                    <div class="window"></div>
+                </div>
+                <div class="exhaust-flame"></div>
+            </div>
         </div>
 
         <!-- 結果表示エリア -->

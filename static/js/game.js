@@ -1,4 +1,40 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // 推力と重量の表示を更新する関数
+    function updateStats() {
+        const hand = Array.from(document.querySelectorAll('.game-card')).map(card => {
+            const thrustEl = card.querySelector('.card-stats p:first-child');
+            const weightEl = card.querySelector('.card-stats p:nth-child(2)');
+            return {
+                thrust: thrustEl ? parseInt(thrustEl.textContent.match(/\d+/)[0]) : 0,
+                weight: parseInt(weightEl.textContent.match(/\d+/)[0])
+            };
+        });
+
+        const totalThrust = hand.reduce((sum, card) => sum + card.thrust, 0);
+        const totalWeight = hand.reduce((sum, card) => sum + card.weight, 0);
+        const requiredThrust = parseInt(document.querySelector('#required-thrust-bar span').textContent);
+
+        // プログレスバーの更新
+        const thrustBar = document.querySelector('#thrust-bar');
+        const weightBar = document.querySelector('#weight-bar');
+
+        thrustBar.style.width = `${(totalThrust / 200) * 100}%`;
+        weightBar.style.width = `${(totalWeight / 200) * 100}%`;
+
+        document.querySelector('#thrust-value').textContent = `${totalThrust} kN`;
+        document.querySelector('#weight-value').textContent = `${totalWeight} kN`;
+
+        // 発射ボタンの状態を更新
+        const launchButton = document.getElementById('launch-button');
+        if (totalThrust >= totalWeight && totalThrust >= requiredThrust) {
+            launchButton.classList.remove('btn-danger');
+            launchButton.classList.add('btn-success');
+        } else {
+            launchButton.classList.remove('btn-success');
+            launchButton.classList.add('btn-danger');
+        }
+    }
+
     // カード選択の処理
     document.querySelectorAll('.card-select').forEach(button => {
         button.addEventListener('click', function() {
@@ -9,17 +45,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // 同じ種類の他のカードの選択状態をリセット
+                        // 選択状態を更新
                         document.querySelectorAll(`.card-${cardType} .card-select`).forEach(btn => {
                             btn.classList.remove('btn-selected');
                             btn.textContent = '選択';
                         });
-
-                        // 選択されたカードの状態を更新
                         this.classList.add('btn-selected');
                         this.textContent = '選択済み';
 
-                        updateGameState();
+                        updateStats();
                     } else {
                         alert('カードの選択に失敗しました');
                     }
@@ -36,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        updateGameState();
+                        location.reload();
                     } else {
                         alert('カードの取り外しに失敗しました');
                     }
@@ -46,18 +80,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ロケット発射の処理
     document.getElementById('launch-button').addEventListener('click', function() {
+        const rocketAnimation = document.getElementById('rocket-animation');
+        rocketAnimation.classList.remove('d-none');
+
         fetch('/launch_rocket', {
             method: 'POST',
         })
         .then(response => response.json())
         .then(data => {
+            const rocket = rocketAnimation.querySelector('.rocket');
             if (data.success) {
+                rocket.classList.add('launch-success');
                 showSuccessMessage(data);
             } else {
+                rocket.classList.add('launch-failure');
                 showFailureMessage(data);
             }
             // 結果に関わらず次のラウンドへ
-            setTimeout(updateGameState, 2000);
+            setTimeout(() => {
+                rocketAnimation.classList.add('d-none');
+                rocket.classList.remove('launch-success', 'launch-failure');
+                location.reload();
+            }, 2500);
         });
     });
 
@@ -85,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
-    function updateGameState() {
-        location.reload();
-    }
+    // 初期状態の更新
+    updateStats();
 });
