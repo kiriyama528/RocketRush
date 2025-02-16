@@ -10,7 +10,7 @@
             <p>必要推力: {{ mission.required_thrust }}kN</p>
             <p>獲得ポイント: {{ mission.points }}点</p>
         </div>
-        
+
         <div class="scoreboard">
             <h3>スコア情報</h3>
             <p>現在のスコア: {{ score }}点</p>
@@ -57,6 +57,12 @@
                         <p>推力: {{ card.thrust }}kN</p>
                         {% endif %}
                         <p>重量: {{ card.weight }}kN</p>
+                        {% if not card.is_default %}
+                        <button class="btn btn-warning card-remove"
+                                data-card-id="{{ card.id }}">
+                            基本装備に戻す
+                        </button>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}

@@ -24,28 +24,28 @@ db.init_app(app)
 # カードデータ
 CARDS = {
     'engines': [
-        {'id': 'e0', 'name': 'Basic Engine', 'thrust': 15, 'weight': 15, 'description': '基本装備のエンジン', 'is_default': True},
-        {'id': 'e1', 'name': 'Standard Engine', 'thrust': 25, 'weight': 10, 'description': 'Standard rocket engine'},
-        {'id': 'e2', 'name': 'Advanced Engine', 'thrust': 35, 'weight': 15, 'description': 'High performance engine'},
-        {'id': 'e3', 'name': 'Super Engine', 'thrust': 45, 'weight': 20, 'description': 'Based on SpaceX Raptor'}
+        {'id': 'e0', 'name': 'Basic Engine', 'thrust': 10, 'weight': 10, 'description': '基本装備のエンジン', 'is_default': True},
+        {'id': 'e1', 'name': 'Standard Engine', 'thrust': 20, 'weight': 8, 'description': 'Standard rocket engine'},
+        {'id': 'e2', 'name': 'Advanced Engine', 'thrust': 30, 'weight': 12, 'description': 'High performance engine'},
+        {'id': 'e3', 'name': 'Super Engine', 'thrust': 40, 'weight': 18, 'description': 'Based on SpaceX Raptor'}
     ],
     'fuel': [
-        {'id': 'f0', 'name': 'Basic Fuel', 'weight': 8, 'description': '基本装備の燃料', 'is_default': True},
-        {'id': 'f1', 'name': 'Standard Fuel', 'weight': 5, 'description': 'Standard rocket fuel'},
-        {'id': 'f2', 'name': 'Efficient Fuel', 'weight': 4, 'description': 'Lightweight fuel mix'},
-        {'id': 'f3', 'name': 'Dense Fuel', 'weight': 7, 'description': 'High energy density fuel'}
+        {'id': 'f0', 'name': 'Basic Fuel', 'weight': 6, 'description': '基本装備の燃料', 'is_default': True},
+        {'id': 'f1', 'name': 'Standard Fuel', 'weight': 4, 'description': 'Standard rocket fuel'},
+        {'id': 'f2', 'name': 'Efficient Fuel', 'weight': 3, 'description': 'Lightweight fuel mix'},
+        {'id': 'f3', 'name': 'Dense Fuel', 'weight': 5, 'description': 'High energy density fuel'}
     ],
     'fairings': [
-        {'id': 'fa0', 'name': 'Basic Fairing', 'weight': 20, 'description': '基本装備のフェアリング', 'is_default': True},
-        {'id': 'fa1', 'name': 'Standard Fairing', 'weight': 15, 'description': 'Standard protective shell'},
-        {'id': 'fa2', 'name': 'Light Fairing', 'weight': 12, 'description': 'Lightweight composite fairing'},
-        {'id': 'fa3', 'name': 'Heavy Fairing', 'weight': 20, 'description': 'Extra protective fairing'}
+        {'id': 'fa0', 'name': 'Basic Fairing', 'weight': 15, 'description': '基本装備のフェアリング', 'is_default': True},
+        {'id': 'fa1', 'name': 'Standard Fairing', 'weight': 12, 'description': 'Standard protective shell'},
+        {'id': 'fa2', 'name': 'Light Fairing', 'weight': 10, 'description': 'Lightweight composite fairing'},
+        {'id': 'fa3', 'name': 'Heavy Fairing', 'weight': 15, 'description': 'Extra protective fairing'}
     ],
     'payloads': [
-        {'id': 'p0', 'name': 'Basic Payload', 'weight': 25, 'points': 3, 'description': '基本装備のペイロード', 'is_default': True},
-        {'id': 'p1', 'name': 'Satellite', 'weight': 20, 'points': 5, 'description': 'Communication satellite'},
-        {'id': 'p2', 'name': 'Space Station Module', 'weight': 25, 'points': 8, 'description': 'ISS module'},
-        {'id': 'p3', 'name': 'Moon Lander', 'weight': 30, 'points': 12, 'description': 'Lunar expedition module'}
+        {'id': 'p0', 'name': 'Basic Payload', 'weight': 20, 'points': 3, 'description': '基本装備のペイロード', 'is_default': True},
+        {'id': 'p1', 'name': 'Satellite', 'weight': 18, 'points': 5, 'description': 'Communication satellite'},
+        {'id': 'p2', 'name': 'Space Station Module', 'weight': 22, 'points': 8, 'description': 'ISS module'},
+        {'id': 'p3', 'name': 'Moon Lander', 'weight': 27, 'points': 12, 'description': 'Lunar expedition module'}
     ]
 }
 
@@ -88,9 +88,15 @@ def new_game():
         db.session.add(game_session)
         db.session.commit()
 
+    # 基本装備を初期選択として設定
+    initial_hand = []
+    for card_type, cards in CARDS.items():
+        default_card = next(card for card in cards if card.get('is_default'))
+        initial_hand.append(default_card)
+
     session['score'] = 0
     session['round'] = 1
-    session['hand'] = []
+    session['hand'] = initial_hand
     session['market'] = _generate_market()
     session['current_mission'] = random.choice(MISSIONS)
     return redirect(url_for('game'))
@@ -133,16 +139,9 @@ def select_card(card_type, card_id):
     # 現在の手札を取得
     hand = session.get('hand', [])
 
-    # 同じ種類のカードを探す
+    # 同じ種類のカードを探して置き換え
     for i, card in enumerate(hand):
         if card['id'].startswith(card_type[0]):  # IDの先頭文字で種類を判断
-            # 同じカードが選択された場合は取り外し
-            if card['id'] == card_id:
-                hand.pop(i)
-                session['hand'] = hand
-                session.modified = True
-                return jsonify({'success': True, 'action': 'removed'})
-            # 異なるカードの場合は置き換え
             hand[i] = selected_card
             session['hand'] = hand
             session.modified = True
@@ -154,20 +153,32 @@ def select_card(card_type, card_id):
     session.modified = True
     return jsonify({'success': True, 'action': 'added'})
 
+@app.route('/remove_card/<card_id>')
+def remove_card(card_id):
+    hand = session.get('hand', [])
+
+    # カードを探して基本装備に置き換え
+    for i, card in enumerate(hand):
+        if card['id'] == card_id:
+            card_type = None
+            for type_name, cards in CARDS.items():
+                if card['id'].startswith(type_name[0]):
+                    card_type = type_name
+                    break
+
+            if card_type:
+                default_card = next(c for c in CARDS[card_type] if c.get('is_default'))
+                hand[i] = default_card
+                session['hand'] = hand
+                session.modified = True
+                return jsonify({'success': True})
+
+    return jsonify({'error': 'Card not found'}), 404
+
 @app.route('/launch_rocket', methods=['POST'])
 def launch_rocket():
     hand = session.get('hand', [])
     mission = session.get('current_mission')
-
-    # 基本装備の適用
-    used_types = {card['id'][0] for card in hand}  # 選択されているカードの種類
-
-    # 不足しているパーツを基本装備で補完
-    for card_type, cards in CARDS.items():
-        type_prefix = card_type[0]
-        if type_prefix not in used_types:
-            default_card = next(card for card in cards if card.get('is_default'))
-            hand.append(default_card)
 
     total_weight = sum(card.get('weight', 0) for card in hand)
     total_thrust = sum(card.get('thrust', 0) for card in hand if 'thrust' in card)
