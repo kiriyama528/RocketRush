@@ -1,9 +1,25 @@
 import os
-from flask import Flask, render_template, session, jsonify, request, redirect, url_for
 import random
+from flask import Flask, render_template, session, jsonify, request, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
 
+class Base(DeclarativeBase):
+    pass
+
+db = SQLAlchemy(model_class=Base)
+# create the app
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "default-secret-key")
+
+# データベース設定
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_recycle": 300,
+    "pool_pre_ping": True,
+}
+# initialize the app with the extension
+db.init_app(app)
 
 # カードデータ
 CARDS = {
@@ -35,12 +51,30 @@ MISSIONS = [
     {'id': 'm3', 'name': 'Moon Mission', 'required_thrust': 150, 'points': 12}
 ]
 
+with app.app_context():
+    # Make sure to import the models here or their tables won't be created
+    from models import GameSession, Card, Mission  # noqa: F401
+    db.create_all()
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route('/new_game')
 def new_game():
+    # セッションIDがない場合は生成
+    if '_id' not in session:
+        session['_id'] = os.urandom(16).hex()
+
+    # 新しいゲームセッションを作成
+    game_session = GameSession(
+        session_id=session.get('_id'),
+        score=0,
+        round=1
+    )
+    db.session.add(game_session)
+    db.session.commit()
+
     session['score'] = 0
     session['round'] = 1
     session['hand'] = []
@@ -52,7 +86,7 @@ def new_game():
 def game():
     if 'score' not in session:
         return redirect(url_for('new_game'))
-    return render_template('game.html', 
+    return render_template('game.html',
                          market=session['market'],
                          hand=session['hand'],
                          mission=session['current_mission'],
@@ -72,13 +106,13 @@ def _generate_market():
 def select_card(card_type, card_id):
     if card_type not in CARDS:
         return jsonify({'error': 'Invalid card type'}), 400
-    
+
     card = None
     for c in CARDS[card_type]:
         if c['id'] == card_id:
             card = c
             break
-    
+
     if card:
         session['hand'].append(card)
         session.modified = True
@@ -89,20 +123,29 @@ def select_card(card_type, card_id):
 def launch_rocket():
     hand = session.get('hand', [])
     mission = session.get('current_mission')
-    
+
     total_weight = sum(card.get('weight', 0) for card in hand)
     total_thrust = sum(card.get('thrust', 0) for card in hand if 'thrust' in card)
-    
+
     success = total_thrust >= total_weight and total_thrust >= mission['required_thrust']
-    
+
     if success:
+        # スコアを更新
         session['score'] += mission['points']
         session['round'] += 1
+
+        # データベースを更新
+        game_session = GameSession.query.filter_by(session_id=session.get('_id')).first()
+        if game_session:
+            game_session.score = session['score']
+            game_session.round = session['round']
+            db.session.commit()
+
         session['hand'] = []
         session['market'] = _generate_market()
         session['current_mission'] = random.choice(MISSIONS)
         session.modified = True
-        
+
     return jsonify({
         'success': success,
         'total_thrust': total_thrust,
