@@ -1,42 +1,74 @@
-/* カードスタイル */
+/* カードのベーススタイル */
 .game-card {
     border: 1px solid var(--bs-border-color);
-    border-radius: 8px;
-    padding: 1rem;
+    border-radius: 12px;
+    padding: 1.5rem;
     margin-bottom: 1rem;
     background-color: var(--bs-dark);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
 }
 
 .game-card:hover {
     transform: translateY(-5px);
-    transition: transform 0.2s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .card-header {
-    border-bottom: 1px solid var(--bs-border-color);
-    padding-bottom: 0.5rem;
+    text-align: center;
+    padding-bottom: 1rem;
     margin-bottom: 1rem;
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+.card-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    display: block;
+}
+
+.card-stats {
+    margin: 1rem 0;
+    padding: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+
+.card-description {
+    font-size: 0.9rem;
+    color: var(--bs-gray-400);
+    margin-bottom: 1rem;
+    flex-grow: 1;
 }
 
 /* ミッション表示 */
 .mission-card {
     background-color: var(--bs-primary);
     color: white;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
 }
 
 /* スコアボード */
 .scoreboard {
     background-color: var(--bs-dark);
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
 }
 
-/* アニメーション */
+/* 選択済みカードのスタイル */
+.btn-selected {
+    background-color: var(--bs-success) !important;
+    border-color: var(--bs-success) !important;
+}
+
+/* カードアニメーション */
 @keyframes cardPulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
@@ -45,4 +77,21 @@
 
 .card-selected {
     animation: cardPulse 0.5s ease;
+}
+
+/* カード種類ごとの色分け */
+.card-engines {
+    border-left: 4px solid var(--bs-danger);
+}
+
+.card-fuel {
+    border-left: 4px solid var(--bs-warning);
+}
+
+.card-fairings {
+    border-left: 4px solid var(--bs-info);
+}
+
+.card-payloads {
+    border-left: 4px solid var(--bs-success);
 }

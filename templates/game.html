@@ -23,42 +23,55 @@
         <h3>カードマーケット</h3>
         <div class="row">
             {% for card_type, card in market.items() %}
-            <div class="col-md-6 mb-3">
-                <div class="game-card">
+            <div class="col-md-6 mb-4">
+                <div class="game-card card-{{ card_type }}">
                     <div class="card-header">
                         <h4>{{ card.name }}</h4>
+                        {% include 'icons/' + card.icon + '.svg' %}
                     </div>
-                    <div class="card-body">
+                    <div class="card-stats">
                         {% if card.thrust %}
-                        <p>推力: {{ card.thrust }}kN</p>
+                        <p><i class="fas fa-rocket"></i> 推力: {{ card.thrust }}kN</p>
                         {% endif %}
-                        <p>重量: {{ card.weight }}kN</p>
-                        <p class="text-muted">{{ card.description }}</p>
-                        <button class="btn btn-primary card-select"
-                                data-card-type="{{ card_type }}"
-                                data-card-id="{{ card.id }}">
-                            選択
-                        </button>
+                        <p><i class="fas fa-weight-hanging"></i> 重量: {{ card.weight }}kN</p>
+                        {% if card.points %}
+                        <p><i class="fas fa-star"></i> ポイント: {{ card.points }}</p>
+                        {% endif %}
                     </div>
+                    <p class="card-description">{{ card.description }}</p>
+                    <button class="btn btn-primary card-select w-100"
+                            data-card-type="{{ card_type }}"
+                            data-card-id="{{ card.id }}">
+                        選択
+                    </button>
                 </div>
             </div>
             {% endfor %}
         </div>
 
-        <!-- 手持ちカード -->
+        <!-- 選択したカード -->
         <div class="mt-4">
             <h3>選択したカード</h3>
             <div class="row">
                 {% for card in hand %}
-                <div class="col-md-6 mb-3">
+                <div class="col-md-6 mb-4">
                     <div class="game-card">
-                        <h4>{{ card.name }}</h4>
-                        {% if card.thrust %}
-                        <p>推力: {{ card.thrust }}kN</p>
-                        {% endif %}
-                        <p>重量: {{ card.weight }}kN</p>
+                        <div class="card-header">
+                            <h4>{{ card.name }}</h4>
+                            {% include 'icons/' + card.icon + '.svg' %}
+                        </div>
+                        <div class="card-stats">
+                            {% if card.thrust %}
+                            <p><i class="fas fa-rocket"></i> 推力: {{ card.thrust }}kN</p>
+                            {% endif %}
+                            <p><i class="fas fa-weight-hanging"></i> 重量: {{ card.weight }}kN</p>
+                            {% if card.points %}
+                            <p><i class="fas fa-star"></i> ポイント: {{ card.points }}</p>
+                            {% endif %}
+                        </div>
+                        <p class="card-description">{{ card.description }}</p>
                         {% if not card.is_default %}
-                        <button class="btn btn-warning card-remove"
+                        <button class="btn btn-warning card-remove w-100"
                                 data-card-id="{{ card.id }}">
                             基本装備に戻す
                         </button>
@@ -72,7 +85,7 @@
         <!-- 発射ボタン -->
         <div class="text-center mt-4">
             <button id="launch-button" class="btn btn-danger btn-lg">
-                ロケットを発射！
+                <i class="fas fa-rocket"></i> ロケットを発射！
             </button>
         </div>
 
@@ -83,5 +96,6 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://kit.fontawesome.com/1234567890.js"></script>
 <script src="{{ url_for('static', filename='js/game.js') }}"></script>
 {% endblock %}

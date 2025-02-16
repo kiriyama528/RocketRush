@@ -21,32 +21,36 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 # initialize the app with the extension
 db.init_app(app)
 
-# カードデータ
-CARDS = {
+# カードデータ（基本装備を除外したマーケット用）
+MARKET_CARDS = {
     'engines': [
-        {'id': 'e0', 'name': 'Basic Engine', 'thrust': 10, 'weight': 10, 'description': '基本装備のエンジン', 'is_default': True},
-        {'id': 'e1', 'name': 'Standard Engine', 'thrust': 20, 'weight': 8, 'description': 'Standard rocket engine'},
-        {'id': 'e2', 'name': 'Advanced Engine', 'thrust': 30, 'weight': 12, 'description': 'High performance engine'},
-        {'id': 'e3', 'name': 'Super Engine', 'thrust': 40, 'weight': 18, 'description': 'Based on SpaceX Raptor'}
+        {'id': 'e1', 'name': 'Standard Engine', 'thrust': 20, 'weight': 8, 'description': 'Standard rocket engine', 'icon': 'standard-engine'},
+        {'id': 'e2', 'name': 'Advanced Engine', 'thrust': 30, 'weight': 12, 'description': 'High performance engine', 'icon': 'advanced-engine'},
+        {'id': 'e3', 'name': 'Super Engine', 'thrust': 40, 'weight': 18, 'description': 'Based on SpaceX Raptor', 'icon': 'super-engine'}
     ],
     'fuel': [
-        {'id': 'f0', 'name': 'Basic Fuel', 'weight': 6, 'description': '基本装備の燃料', 'is_default': True},
-        {'id': 'f1', 'name': 'Standard Fuel', 'weight': 4, 'description': 'Standard rocket fuel'},
-        {'id': 'f2', 'name': 'Efficient Fuel', 'weight': 3, 'description': 'Lightweight fuel mix'},
-        {'id': 'f3', 'name': 'Dense Fuel', 'weight': 5, 'description': 'High energy density fuel'}
+        {'id': 'f1', 'name': 'Standard Fuel', 'weight': 4, 'description': 'Standard rocket fuel', 'icon': 'standard-fuel'},
+        {'id': 'f2', 'name': 'Efficient Fuel', 'weight': 3, 'description': 'Lightweight fuel mix', 'icon': 'efficient-fuel'},
+        {'id': 'f3', 'name': 'Dense Fuel', 'weight': 5, 'description': 'High energy density fuel', 'icon': 'dense-fuel'}
     ],
     'fairings': [
-        {'id': 'fa0', 'name': 'Basic Fairing', 'weight': 15, 'description': '基本装備のフェアリング', 'is_default': True},
-        {'id': 'fa1', 'name': 'Standard Fairing', 'weight': 12, 'description': 'Standard protective shell'},
-        {'id': 'fa2', 'name': 'Light Fairing', 'weight': 10, 'description': 'Lightweight composite fairing'},
-        {'id': 'fa3', 'name': 'Heavy Fairing', 'weight': 15, 'description': 'Extra protective fairing'}
+        {'id': 'fa1', 'name': 'Standard Fairing', 'weight': 12, 'description': 'Standard protective shell', 'icon': 'standard-fairing'},
+        {'id': 'fa2', 'name': 'Light Fairing', 'weight': 10, 'description': 'Lightweight composite fairing', 'icon': 'light-fairing'},
+        {'id': 'fa3', 'name': 'Heavy Fairing', 'weight': 15, 'description': 'Extra protective fairing', 'icon': 'heavy-fairing'}
     ],
     'payloads': [
-        {'id': 'p0', 'name': 'Basic Payload', 'weight': 20, 'points': 3, 'description': '基本装備のペイロード', 'is_default': True},
-        {'id': 'p1', 'name': 'Satellite', 'weight': 18, 'points': 5, 'description': 'Communication satellite'},
-        {'id': 'p2', 'name': 'Space Station Module', 'weight': 22, 'points': 8, 'description': 'ISS module'},
-        {'id': 'p3', 'name': 'Moon Lander', 'weight': 27, 'points': 12, 'description': 'Lunar expedition module'}
+        {'id': 'p1', 'name': 'Satellite', 'weight': 18, 'points': 5, 'description': 'Communication satellite', 'icon': 'satellite'},
+        {'id': 'p2', 'name': 'Space Station Module', 'weight': 22, 'points': 8, 'description': 'ISS module', 'icon': 'space-station'},
+        {'id': 'p3', 'name': 'Moon Lander', 'weight': 27, 'points': 12, 'description': 'Lunar expedition module', 'icon': 'moon-lander'}
     ]
+}
+
+# 基本装備データ
+DEFAULT_CARDS = {
+    'engines': {'id': 'e0', 'name': 'Basic Engine', 'thrust': 10, 'weight': 10, 'description': '基本装備のエンジン', 'is_default': True, 'icon': 'basic-engine'},
+    'fuel': {'id': 'f0', 'name': 'Basic Fuel', 'weight': 6, 'description': '基本装備の燃料', 'is_default': True, 'icon': 'basic-fuel'},
+    'fairings': {'id': 'fa0', 'name': 'Basic Fairing', 'weight': 15, 'description': '基本装備のフェアリング', 'is_default': True, 'icon': 'basic-fairing'},
+    'payloads': {'id': 'p0', 'name': 'Basic Payload', 'weight': 20, 'points': 3, 'description': '基本装備のペイロード', 'is_default': True, 'icon': 'basic-payload'}
 }
 
 MISSIONS = [
@@ -89,14 +93,9 @@ def new_game():
         db.session.commit()
 
     # 基本装備を初期選択として設定
-    initial_hand = []
-    for card_type, cards in CARDS.items():
-        default_card = next(card for card in cards if card.get('is_default'))
-        initial_hand.append(default_card)
-
     session['score'] = 0
     session['round'] = 1
-    session['hand'] = initial_hand
+    session['hand'] = list(DEFAULT_CARDS.values())
     session['market'] = _generate_market()
     session['current_mission'] = random.choice(MISSIONS)
     return redirect(url_for('game'))
@@ -113,22 +112,19 @@ def game():
                          round=session['round'])
 
 def _generate_market():
-    market = {
-        'engines': random.choice(CARDS['engines']),
-        'fuel': random.choice(CARDS['fuel']),
-        'fairings': random.choice(CARDS['fairings']),
-        'payloads': random.choice(CARDS['payloads'])
-    }
+    market = {}
+    for card_type, cards in MARKET_CARDS.items():
+        market[card_type] = random.choice(cards)
     return market
 
 @app.route('/select_card/<card_type>/<card_id>')
 def select_card(card_type, card_id):
-    if card_type not in CARDS:
+    if card_type not in MARKET_CARDS:
         return jsonify({'error': 'Invalid card type'}), 400
 
     # カードを見つける
     selected_card = None
-    for card in CARDS[card_type]:
+    for card in MARKET_CARDS[card_type]:
         if card['id'] == card_id:
             selected_card = card
             break
@@ -145,13 +141,13 @@ def select_card(card_type, card_id):
             hand[i] = selected_card
             session['hand'] = hand
             session.modified = True
-            return jsonify({'success': True, 'action': 'replaced'})
+            return jsonify({'success': True})
 
     # 新しいカードを追加
     hand.append(selected_card)
     session['hand'] = hand
     session.modified = True
-    return jsonify({'success': True, 'action': 'added'})
+    return jsonify({'success': True})
 
 @app.route('/remove_card/<card_id>')
 def remove_card(card_id):

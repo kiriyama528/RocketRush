@@ -9,6 +9,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        // 同じ種類の他のカードの選択状態をリセット
+                        document.querySelectorAll(`.card-${cardType} .card-select`).forEach(btn => {
+                            btn.classList.remove('btn-selected');
+                            btn.textContent = '選択';
+                        });
+
+                        // 選択されたカードの状態を更新
+                        this.classList.add('btn-selected');
+                        this.textContent = '選択済み';
+
                         updateGameState();
                     } else {
                         alert('カードの選択に失敗しました');
@@ -55,10 +65,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const messageDiv = document.getElementById('launch-result');
         messageDiv.innerHTML = `
             <div class="alert alert-success">
-                発射成功！<br>
-                総推力: ${data.total_thrust}kN<br>
-                総重量: ${data.total_weight}kN<br>
-                スコア: ${data.score}点
+                <h4><i class="fas fa-check-circle"></i> 発射成功！</h4>
+                <p>総推力: ${data.total_thrust}kN</p>
+                <p>総重量: ${data.total_weight}kN</p>
+                <p>スコア: ${data.score}点</p>
             </div>
         `;
     }
@@ -67,10 +77,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const messageDiv = document.getElementById('launch-result');
         messageDiv.innerHTML = `
             <div class="alert alert-danger">
-                発射失敗<br>
-                総推力: ${data.total_thrust}kN<br>
-                総重量: ${data.total_weight}kN<br>
-                スコア: ${data.score}点
+                <h4><i class="fas fa-times-circle"></i> 発射失敗</h4>
+                <p>総推力: ${data.total_thrust}kN</p>
+                <p>総重量: ${data.total_weight}kN</p>
+                <p>スコア: ${data.score}点</p>
             </div>
         `;
     }
