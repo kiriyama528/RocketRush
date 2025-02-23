@@ -4,19 +4,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedCards = document.querySelectorAll('.selected-cards .game-card');
         const totalThrust = Array.from(selectedCards).reduce((sum, card) => {
             const stats = card.querySelector('.card-stats').textContent;
-            const match = stats.match(/推力：(\d+)/);
+            const match = stats.match(/推力: (\d+)/);
             return sum + (match ? parseInt(match[1]) : 0);
         }, 0);
 
         const totalWeight = Array.from(selectedCards).reduce((sum, card) => {
             const stats = card.querySelector('.card-stats').textContent;
-            const match = stats.match(/重量：(\d+)/);
+            const match = stats.match(/重量: (\d+)/);
             return sum + (match ? parseInt(match[1]) : 0);
         }, 0);
 
         const totalPoints = Array.from(selectedCards).reduce((sum, card) => {
             const stats = card.querySelector('.card-stats').textContent;
-            const match = stats.match(/ポイント：(\d+)/);
+            const match = stats.match(/ポイント: (\d+)/);
             return sum + (match ? parseInt(match[1]) : 0);
         }, 0);
 
