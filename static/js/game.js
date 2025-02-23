@@ -3,13 +3,21 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateStats() {
         const selectedCards = document.querySelectorAll('.selected-cards .game-card');
         const totalThrust = Array.from(selectedCards).reduce((sum, card) => {
-            const thrustEl = card.querySelector('.card-stats p:first-child');
-            return sum + (thrustEl ? parseInt(thrustEl.textContent.match(/\d+/)[0]) : 0);
+            const stats = card.querySelector('.card-stats').textContent;
+            const match = stats.match(/推力：(\d+)/);
+            return sum + (match ? parseInt(match[1]) : 0);
         }, 0);
 
         const totalWeight = Array.from(selectedCards).reduce((sum, card) => {
-            const weightEl = card.querySelector('.card-stats p:nth-child(2)');
-            return sum + (weightEl ? parseInt(weightEl.textContent.match(/\d+/)[0]) : 0);
+            const stats = card.querySelector('.card-stats').textContent;
+            const match = stats.match(/重量：(\d+)/);
+            return sum + (match ? parseInt(match[1]) : 0);
+        }, 0);
+
+        const totalPoints = Array.from(selectedCards).reduce((sum, card) => {
+            const stats = card.querySelector('.card-stats').textContent;
+            const match = stats.match(/ポイント：(\d+)/);
+            return sum + (match ? parseInt(match[1]) : 0);
         }, 0);
 
         const requiredThrust = parseInt(document.querySelector('#required-thrust-bar span').textContent);
@@ -17,12 +25,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // プログレスバーの更新
         const thrustBar = document.querySelector('#thrust-bar');
         const weightBar = document.querySelector('#weight-bar');
+        const pointsBar = document.querySelector('#points-bar');
 
         thrustBar.style.width = `${(totalThrust / 200) * 100}%`;
         weightBar.style.width = `${(totalWeight / 200) * 100}%`;
+        pointsBar.style.width = `${(totalPoints / 20) * 100}%`;
 
         document.querySelector('#thrust-value').textContent = `${totalThrust} kN`;
         document.querySelector('#weight-value').textContent = `${totalWeight} kN`;
+        document.querySelector('#points-value').textContent = `${totalPoints} pts`;
 
         // 発射ボタンの状態を更新
         const launchButton = document.getElementById('launch-button');
