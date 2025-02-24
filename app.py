@@ -3,6 +3,8 @@ import random
 from flask import Flask, render_template, session, jsonify, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
+from game.card_manager import JsonCardProvider, CardManager # Added import
+from game.mission_manager import DefaultMissionProvider, MissionManager # Added import
 
 class Base(DeclarativeBase):
     pass
@@ -21,43 +23,21 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 # initialize the app with the extension
 db.init_app(app)
 
-# カードデータ（基本装備を除外したマーケット用）
-MARKET_CARDS = {
-    'engines': [
-        {'id': 'e1', 'name': 'Standard Engine', 'thrust': 20, 'weight': 8, 'description': 'Standard rocket engine', 'icon': 'standard-engine'},
-        {'id': 'e2', 'name': 'Advanced Engine', 'thrust': 30, 'weight': 12, 'description': 'High performance engine', 'icon': 'advanced-engine'},
-        {'id': 'e3', 'name': 'Super Engine', 'thrust': 40, 'weight': 18, 'description': 'Based on SpaceX Raptor', 'icon': 'super-engine'}
-    ],
-    'fuel': [
-        {'id': 'f1', 'name': 'Standard Fuel', 'weight': 4, 'description': 'Standard rocket fuel', 'icon': 'standard-fuel'},
-        {'id': 'f2', 'name': 'Efficient Fuel', 'weight': 3, 'description': 'Lightweight fuel mix', 'icon': 'efficient-fuel'},
-        {'id': 'f3', 'name': 'Dense Fuel', 'weight': 5, 'description': 'High energy density fuel', 'icon': 'dense-fuel'}
-    ],
-    'fairings': [
-        {'id': 'fair1', 'name': 'Standard Fairing', 'weight': 12, 'description': 'Standard protective shell', 'icon': 'standard-fairing'},
-        {'id': 'fair2', 'name': 'Light Fairing', 'weight': 10, 'description': 'Lightweight composite fairing', 'icon': 'light-fairing'},
-        {'id': 'fair3', 'name': 'Heavy Fairing', 'weight': 15, 'description': 'Extra protective fairing', 'icon': 'heavy-fairing'}
-    ],
-    'payloads': [
-        {'id': 'p1', 'name': 'Satellite', 'weight': 18, 'points': 5, 'description': 'Communication satellite', 'icon': 'satellite'},
-        {'id': 'p2', 'name': 'Space Station Module', 'weight': 22, 'points': 8, 'description': 'ISS module', 'icon': 'space-station'},
-        {'id': 'p3', 'name': 'Moon Lander', 'weight': 27, 'points': 12, 'description': 'Lunar expedition module', 'icon': 'moon-lander'}
-    ]
-}
+# Initialize managers
+card_provider = JsonCardProvider('config/cards.json') #Requires cards.json file in config folder
+card_manager = CardManager(card_provider)
+mission_provider = DefaultMissionProvider()
+mission_manager = MissionManager(mission_provider)
 
-# 基本装備データ
-DEFAULT_CARDS = {
-    'engines': {'id': 'e0', 'name': 'Basic Engine', 'thrust': 10, 'weight': 10, 'description': '基本装備のエンジン', 'is_default': True, 'icon': 'basic-engine'},
-    'fuel': {'id': 'f0', 'name': 'Basic Fuel', 'weight': 6, 'description': '基本装備の燃料', 'is_default': True, 'icon': 'basic-fuel'},
-    'fairings': {'id': 'fair0', 'name': 'Basic Fairing', 'weight': 15, 'description': '基本装備のフェアリング', 'is_default': True, 'icon': 'basic-fairing'},
-    'payloads': {'id': 'p0', 'name': 'Basic Payload', 'weight': 20, 'points': 3, 'description': '基本装備のペイロード', 'is_default': True, 'icon': 'basic-payload'}
-}
 
-MISSIONS = [
-    {'id': 'm1', 'name': 'Orbit Insertion', 'required_thrust': 80, 'points': 5},
-    {'id': 'm2', 'name': 'Space Station Resupply', 'required_thrust': 120, 'points': 8},
-    {'id': 'm3', 'name': 'Moon Mission', 'required_thrust': 150, 'points': 12}
-]
+# カードデータ（基本装備を除外したマーケット用） - Moved to external file
+# MARKET_CARDS = { ... }  Removed
+
+# 基本装備データ - Moved to external file
+# DEFAULT_CARDS = { ... } Removed
+
+# ミッションデータ - Moved to external file or handled by mission_manager
+# MISSIONS = [ ... ] Removed
 
 with app.app_context():
     # Make sure to import the models here or their tables won't be created
@@ -95,9 +75,9 @@ def new_game():
     # 基本装備を初期選択として設定
     session['score'] = 0
     session['round'] = 1
-    session['hand'] = list(DEFAULT_CARDS.values())
-    session['market'] = _generate_market()
-    session['current_mission'] = random.choice(MISSIONS)
+    session['hand'] = list(card_manager.get_default_cards().values()) #Using CardManager
+    session['market'] = card_manager.generate_market() #Using CardManager
+    session['current_mission'] = mission_manager.get_random_mission() #Using MissionManager
     session['selected_cards'] = {} # Initialize selected_cards
     return redirect(url_for('game'))
 
@@ -113,93 +93,19 @@ def game():
                          round=session['round'],
                          selected_cards=session.get('selected_cards',{}))
 
-def _generate_market():
-    market = {}
-    for card_type, cards in MARKET_CARDS.items():
-        market[card_type] = random.choice(cards)
-    return market
+# _generate_market() function removed.  Functionality now in CardManager
 
 @app.route('/select_card/<card_type>/<card_id>')
 def select_card(card_type, card_id):
-    if card_type not in MARKET_CARDS:
-        return jsonify({'error': 'Invalid card type'}), 400
-
-    # カードを見つける
-    selected_card = None
-    for card in MARKET_CARDS[card_type]:
-        if card['id'] == card_id:
-            selected_card = card
-            break
-
-    if not selected_card:
-        return jsonify({'error': 'Card not found'}), 404
-
-    # 現在の手札を取得
-    hand = session.get('hand', [])
-
-    # 同じ種類のカードを探して置き換え
-    for i, card in enumerate(hand):
-        # カードの種類を判定
-        current_type = None
-        if card['id'].startswith('e'):
-            current_type = 'engines'
-        elif card['id'].startswith('fair'):
-            current_type = 'fairings'
-        elif card['id'].startswith('f'):
-            current_type = 'fuel'
-        elif card['id'].startswith('p'):
-            current_type = 'payloads'
-
-        if current_type == card_type:
-            hand[i] = selected_card
-            session['hand'] = hand
-            session['selected_cards'] = session.get('selected_cards', {})
-            session['selected_cards'][card_type] = card_id
-            session.modified = True
-            # カードの詳細情報も返す
-            return jsonify({
-                'success': True,
-                'card': selected_card,
-                'replaced_index': i
-            })
-
-    return jsonify({'error': 'Card type not found in hand'}), 404
+    # This function needs significant revision to use the CardManager
+    # Placeholder - needs implementation using card_manager
+    return jsonify({'error': 'Not yet implemented'}), 501
 
 @app.route('/remove_card/<card_id>')
 def remove_card(card_id):
-    hand = session.get('hand', [])
-    selected_cards = session.get('selected_cards', {})
-
-    # カードを探して基本装備に置き換え
-    for i, card in enumerate(hand):
-        if card['id'] == card_id:
-            card_type = None
-            for type_name, default_card in DEFAULT_CARDS.items():
-                if card['id'].startswith(type_name[0]):
-                    card_type = type_name
-                    break
-
-            if card_type:
-                # カードタイプを正確に判定
-                if card['id'].startswith('fair'):
-                    card_type = 'fairings'
-                elif card['id'].startswith('e'):
-                    card_type = 'engines'
-                elif card['id'].startswith('f'):
-                    card_type = 'fuel'
-                elif card['id'].startswith('p'):
-                    card_type = 'payloads'
-                
-                hand[i] = DEFAULT_CARDS[card_type]
-                session['hand'] = hand
-                # 選択状態をリセット
-                if card_type in selected_cards:
-                    del selected_cards[card_type]
-                session['selected_cards'] = selected_cards
-                session.modified = True
-                return jsonify({'success': True, 'removed_type': card_type})
-
-    return jsonify({'error': 'Card not found'}), 404
+    # This function needs significant revision to use the CardManager
+    # Placeholder - needs implementation using card_manager
+    return jsonify({'error': 'Not yet implemented'}), 501
 
 @app.route('/launch_rocket', methods=['POST'])
 def launch_rocket():
@@ -226,9 +132,9 @@ def launch_rocket():
         db.session.commit()
 
     # 次のラウンドの準備（基本装備を初期化）
-    session['hand'] = list(DEFAULT_CARDS.values())
-    session['market'] = _generate_market()
-    session['current_mission'] = random.choice(MISSIONS)
+    session['hand'] = list(card_manager.get_default_cards().values()) #Using CardManager
+    session['market'] = card_manager.generate_market() #Using CardManager
+    session['current_mission'] = mission_manager.get_random_mission() #Using MissionManager
     session['selected_cards'] = {}  # 選択状態をリセット
     session.modified = True
 

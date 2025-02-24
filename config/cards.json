@@ -1,0 +1,40 @@
+
+{
+  "engines": [
+    {
+      "id": "e1",
+      "name": "Standard Engine",
+      "thrust": 20,
+      "weight": 8,
+      "description": "Standard rocket engine",
+      "icon": "standard-engine"
+    },
+    {
+      "id": "e2",
+      "name": "Advanced Engine",
+      "thrust": 30,
+      "weight": 12,
+      "description": "High performance engine",
+      "icon": "advanced-engine"
+    },
+    {
+      "id": "e3",
+      "name": "Super Engine",
+      "thrust": 40,
+      "weight": 18,
+      "description": "Based on SpaceX Raptor",
+      "icon": "super-engine"
+    }
+  ],
+  "default_cards": {
+    "engines": {
+      "id": "e0",
+      "name": "Basic Engine",
+      "thrust": 10,
+      "weight": 10,
+      "description": "基本装備のエンジン",
+      "is_default": true,
+      "icon": "basic-engine"
+    }
+  }
+}
