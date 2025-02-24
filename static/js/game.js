@@ -43,14 +43,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // すでに選択済みの場合は基本装備に戻す
             if (this.classList.contains('btn-selected')) {
-                const selectedCard = document.querySelector(`.selected-cards .game-card[data-card-type="${cardType}"]`);
-                if (selectedCard) {
-                    const removeButton = selectedCard.querySelector('.card-remove');
-                    if (removeButton) {
-                        removeButton.click();
-                        return;
-                    }
-                }
+                fetch(`/remove_card/${cardId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.classList.remove('btn-selected');
+                            this.textContent = '選択';
+                            
+                            const selectedArea = document.querySelector('.selected-cards');
+                            return fetch('/game');
+                        }
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newCards = doc.querySelector('.selected-cards').innerHTML;
+                        const selectedArea = document.querySelector('.selected-cards');
+                        selectedArea.innerHTML = newCards;
+                        attachCardRemoveListeners();
+                        updateStats();
+                    });
+                return;
             }
 
             fetch(`/select_card/${cardType}/${cardId}`)
