@@ -143,10 +143,10 @@ def select_card(card_type, card_id):
         current_type = None
         if card['id'].startswith('e'):
             current_type = 'engines'
+        elif card['id'].startswith('fair'):
+            current_type = 'fairings'
         elif card['id'].startswith('f'):
             current_type = 'fuel'
-        elif card['id'].startswith('fa'):
-            current_type = 'fairings'
         elif card['id'].startswith('p'):
             current_type = 'payloads'
 
