@@ -1,4 +1,31 @@
+function attachCardRemoveListeners() {
+    document.querySelectorAll('.card-remove').forEach(button => {
+        button.addEventListener('click', function() {
+            const cardId = this.dataset.cardId;
+            fetch(`/remove_card/${cardId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // カードリストを更新
+                        const selectedArea = document.querySelector('.selected-cards');
+                        fetch('/game')
+                            .then(response => response.text())
+                            .then(html => {
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(html, 'text/html');
+                                const newCards = doc.querySelector('.selected-cards').innerHTML;
+                                selectedArea.innerHTML = newCards;
+                                attachCardRemoveListeners();
+                                updateStats();
+                            });
+                    }
+                });
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    attachCardRemoveListeners();
     // 推力と重量の表示を更新する関数
     function updateStats() {
         const selectedCards = document.querySelectorAll('.selected-cards .game-card');
@@ -8,22 +35,34 @@ document.addEventListener('DOMContentLoaded', function() {
         let totalPoints = 0;
 
         selectedCards.forEach(card => {
-            const thrustEl = card.querySelector('.card-stats p:nth-child(1)');
-            const weightEl = card.querySelector('.card-stats p:nth-child(2)');
-            const pointsEl = card.querySelector('.card-stats p:nth-child(3)');
-
-            if (thrustEl && thrustEl.textContent.includes('推力')) {
-                totalThrust += parseInt(thrustEl.textContent.match(/\d+/)[0]);
+            const stats = card.querySelector('.card-stats').textContent;
+            
+            const thrustMatch = stats.match(/推力: (\d+)/);
+            if (thrustMatch) {
+                totalThrust += parseInt(thrustMatch[1]);
             }
-            if (weightEl && weightEl.textContent.includes('重量')) {
-                totalWeight += parseInt(weightEl.textContent.match(/\d+/)[0]);
+            
+            const weightMatch = stats.match(/重量: (\d+)/);
+            if (weightMatch) {
+                totalWeight += parseInt(weightMatch[1]);
             }
-            if (pointsEl && pointsEl.textContent.includes('ポイント')) {
-                totalPoints += parseInt(pointsEl.textContent.match(/\d+/)[0]);
+            
+            const pointsMatch = stats.match(/ポイント: (\d+)/);
+            if (pointsMatch) {
+                totalPoints += parseInt(pointsMatch[1]);
             }
         });
 
-        const requiredThrust = parseInt(document.querySelector('#required-thrust-bar span').textContent);
+        // プログレスバーの更新
+        const maxValue = 200; // 最大値を設定
+        document.querySelector('#thrust-bar').style.width = `${(totalThrust / maxValue) * 100}%`;
+        document.querySelector('#thrust-value').textContent = `${totalThrust} kN`;
+        
+        document.querySelector('#weight-bar').style.width = `${(totalWeight / maxValue) * 100}%`;
+        document.querySelector('#weight-value').textContent = `${totalWeight} kN`;
+        
+        document.querySelector('#points-bar').style.width = `${(totalPoints / 20) * 100}%`;
+        document.querySelector('#points-value').textContent = `${totalPoints} pts`;
 
         // プログレスバーの更新
         const thrustBar = document.querySelector('#thrust-bar');
@@ -67,8 +106,21 @@ document.addEventListener('DOMContentLoaded', function() {
                         this.classList.add('btn-selected');
                         this.textContent = '選択済み';
 
-                        // 統計を更新
-                        updateStats();
+                        // 選択したカードを即時反映
+                        const selectedArea = document.querySelector('.selected-cards');
+                        fetch('/game')
+                            .then(response => response.text())
+                            .then(html => {
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(html, 'text/html');
+                                const newCards = doc.querySelector('.selected-cards').innerHTML;
+                                selectedArea.innerHTML = newCards;
+                                
+                                // イベントリスナーを再設定
+                                attachCardRemoveListeners();
+                                // 統計を更新
+                                updateStats();
+                            });
                     }
                 });
         });

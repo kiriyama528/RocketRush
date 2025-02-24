@@ -180,6 +180,16 @@ def remove_card(card_id):
                     break
 
             if card_type:
+                # カードタイプを正確に判定
+                if card['id'].startswith('fair'):
+                    card_type = 'fairings'
+                elif card['id'].startswith('e'):
+                    card_type = 'engines'
+                elif card['id'].startswith('f'):
+                    card_type = 'fuel'
+                elif card['id'].startswith('p'):
+                    card_type = 'payloads'
+                
                 hand[i] = DEFAULT_CARDS[card_type]
                 session['hand'] = hand
                 # 選択状態をリセット
