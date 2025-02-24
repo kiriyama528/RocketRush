@@ -66,6 +66,22 @@
 .btn-selected {
     background-color: var(--bs-success) !important;
     border-color: var(--bs-success) !important;
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+}
+
+.game-card.selected {
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+}
+
+.card-select {
+    transition: all 0.3s ease;
+}
+
+.card-select:hover {
+    transform: scale(1.05);
 }
 
 /* カードアニメーション */

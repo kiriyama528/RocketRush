@@ -2,23 +2,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // 推力と重量の表示を更新する関数
     function updateStats() {
         const selectedCards = document.querySelectorAll('.selected-cards .game-card');
-        const totalThrust = Array.from(selectedCards).reduce((sum, card) => {
-            const stats = card.querySelector('.card-stats').textContent;
-            const match = stats.match(/推力: (\d+)/);
-            return sum + (match ? parseInt(match[1]) : 0);
-        }, 0);
+        
+        let totalThrust = 0;
+        let totalWeight = 0;
+        let totalPoints = 0;
 
-        const totalWeight = Array.from(selectedCards).reduce((sum, card) => {
-            const stats = card.querySelector('.card-stats').textContent;
-            const match = stats.match(/重量: (\d+)/);
-            return sum + (match ? parseInt(match[1]) : 0);
-        }, 0);
+        selectedCards.forEach(card => {
+            const thrustEl = card.querySelector('.card-stats p:nth-child(1)');
+            const weightEl = card.querySelector('.card-stats p:nth-child(2)');
+            const pointsEl = card.querySelector('.card-stats p:nth-child(3)');
 
-        const totalPoints = Array.from(selectedCards).reduce((sum, card) => {
-            const stats = card.querySelector('.card-stats').textContent;
-            const match = stats.match(/ポイント: (\d+)/);
-            return sum + (match ? parseInt(match[1]) : 0);
-        }, 0);
+            if (thrustEl && thrustEl.textContent.includes('推力')) {
+                totalThrust += parseInt(thrustEl.textContent.match(/\d+/)[0]);
+            }
+            if (weightEl && weightEl.textContent.includes('重量')) {
+                totalWeight += parseInt(weightEl.textContent.match(/\d+/)[0]);
+            }
+            if (pointsEl && pointsEl.textContent.includes('ポイント')) {
+                totalPoints += parseInt(pointsEl.textContent.match(/\d+/)[0]);
+            }
+        });
 
         const requiredThrust = parseInt(document.querySelector('#required-thrust-bar span').textContent);
 
