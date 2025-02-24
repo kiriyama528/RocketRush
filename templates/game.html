@@ -98,7 +98,7 @@
             <div class="row selected-cards">
                 {% for card in hand %}
                 <div class="col-md-6 mb-4">
-                    <div class="game-card">
+                    <div class="game-card" data-card-type="{{ card.id.split('_')[0] if '_' in card.id else card.id[:4] }}">
                         <div class="card-header">
                             <h4>{{ card.name }}</h4>
                             {% include 'icons/' + card.icon + '.svg' %}

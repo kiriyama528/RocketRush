@@ -6,6 +6,14 @@ function attachCardRemoveListeners() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        // 選択状態をリセット
+                        const cardType = data.removed_type;
+                        const marketButton = document.querySelector(`.card-${cardType} .card-select.btn-selected`);
+                        if (marketButton) {
+                            marketButton.classList.remove('btn-selected');
+                            marketButton.textContent = '選択';
+                        }
+
                         // カードリストを更新
                         const selectedArea = document.querySelector('.selected-cards');
                         fetch('/game')
@@ -26,73 +34,24 @@ function attachCardRemoveListeners() {
 
 document.addEventListener('DOMContentLoaded', function() {
     attachCardRemoveListeners();
-    // 推力と重量の表示を更新する関数
-    function updateStats() {
-        const selectedCards = document.querySelectorAll('.selected-cards .game-card');
-        
-        let totalThrust = 0;
-        let totalWeight = 0;
-        let totalPoints = 0;
 
-        selectedCards.forEach(card => {
-            const stats = card.querySelector('.card-stats').textContent;
-            
-            const thrustMatch = stats.match(/推力: (\d+)/);
-            if (thrustMatch) {
-                totalThrust += parseInt(thrustMatch[1]);
-            }
-            
-            const weightMatch = stats.match(/重量: (\d+)/);
-            if (weightMatch) {
-                totalWeight += parseInt(weightMatch[1]);
-            }
-            
-            const pointsMatch = stats.match(/ポイント: (\d+)/);
-            if (pointsMatch) {
-                totalPoints += parseInt(pointsMatch[1]);
-            }
-        });
-
-        // プログレスバーの更新
-        const maxValue = 200; // 最大値を設定
-        document.querySelector('#thrust-bar').style.width = `${(totalThrust / maxValue) * 100}%`;
-        document.querySelector('#thrust-value').textContent = `${totalThrust} kN`;
-        
-        document.querySelector('#weight-bar').style.width = `${(totalWeight / maxValue) * 100}%`;
-        document.querySelector('#weight-value').textContent = `${totalWeight} kN`;
-        
-        document.querySelector('#points-bar').style.width = `${(totalPoints / 20) * 100}%`;
-        document.querySelector('#points-value').textContent = `${totalPoints} pts`;
-
-        // プログレスバーの更新
-        const thrustBar = document.querySelector('#thrust-bar');
-        const weightBar = document.querySelector('#weight-bar');
-        const pointsBar = document.querySelector('#points-bar');
-
-        thrustBar.style.width = `${(totalThrust / 200) * 100}%`;
-        weightBar.style.width = `${(totalWeight / 200) * 100}%`;
-        pointsBar.style.width = `${(totalPoints / 20) * 100}%`;
-
-        document.querySelector('#thrust-value').textContent = `${totalThrust} kN`;
-        document.querySelector('#weight-value').textContent = `${totalWeight} kN`;
-        document.querySelector('#points-value').textContent = `${totalPoints} pts`;
-
-        // 発射ボタンの状態を更新
-        const launchButton = document.getElementById('launch-button');
-        if (totalThrust >= totalWeight && totalThrust >= requiredThrust) {
-            launchButton.classList.remove('btn-danger');
-            launchButton.classList.add('btn-success');
-        } else {
-            launchButton.classList.remove('btn-success');
-            launchButton.classList.add('btn-danger');
-        }
-    }
-
-    // カード選択の処理
+    // カード選択ボタンのイベントリスナー
     document.querySelectorAll('.card-select').forEach(button => {
         button.addEventListener('click', function() {
             const cardType = this.dataset.cardType;
             const cardId = this.dataset.cardId;
+
+            // すでに選択済みの場合は基本装備に戻す
+            if (this.classList.contains('btn-selected')) {
+                const selectedCard = document.querySelector(`.selected-cards .game-card[data-card-type="${cardType}"]`);
+                if (selectedCard) {
+                    const removeButton = selectedCard.querySelector('.card-remove');
+                    if (removeButton) {
+                        removeButton.click();
+                        return;
+                    }
+                }
+            }
 
             fetch(`/select_card/${cardType}/${cardId}`)
                 .then(response => response.json())
@@ -115,10 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 const doc = parser.parseFromString(html, 'text/html');
                                 const newCards = doc.querySelector('.selected-cards').innerHTML;
                                 selectedArea.innerHTML = newCards;
-                                
-                                // イベントリスナーを再設定
                                 attachCardRemoveListeners();
-                                // 統計を更新
                                 updateStats();
                             });
                     }
@@ -126,25 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // 基本装備に戻すボタンの処理
-    document.querySelectorAll('.card-remove').forEach(button => {
-        button.addEventListener('click', function() {
-            const cardId = this.dataset.cardId;
-
-            fetch(`/remove_card/${cardId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // 統計を更新
-                        updateStats();
-                    }
-                });
-        });
-    });
-
-    // 初期状態の統計を更新
     updateStats();
-
     // 発射ボタンの処理
     document.getElementById('launch-button').addEventListener('click', function() {
         fetch('/launch_rocket', {
@@ -172,3 +110,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function updateStats() {
+    const selectedCards = document.querySelectorAll('.selected-cards .game-card');
+
+    let totalThrust = 0;
+    let totalWeight = 0;
+    let totalPoints = 0;
+
+    selectedCards.forEach(card => {
+        const stats = card.querySelector('.card-stats').textContent;
+
+        const thrustMatch = stats.match(/推力: (\d+)/);
+        if (thrustMatch) {
+            totalThrust += parseInt(thrustMatch[1]);
+        }
+
+        const weightMatch = stats.match(/重量: (\d+)/);
+        if (weightMatch) {
+            totalWeight += parseInt(weightMatch[1]);
+        }
+
+        const pointsMatch = stats.match(/ポイント: (\d+)/);
+        if (pointsMatch) {
+            totalPoints += parseInt(pointsMatch[1]);
+        }
+    });
+
+    // プログレスバーの更新
+    const maxValue = 200;
+    document.querySelector('#thrust-bar').style.width = `${(totalThrust / maxValue) * 100}%`;
+    document.querySelector('#thrust-value').textContent = `${totalThrust} kN`;
+
+    document.querySelector('#weight-bar').style.width = `${(totalWeight / maxValue) * 100}%`;
+    document.querySelector('#weight-value').textContent = `${totalWeight} kN`;
+
+    document.querySelector('#points-bar').style.width = `${(totalPoints / 20) * 100}%`;
+    document.querySelector('#points-value').textContent = `${totalPoints} pts`;
+}
