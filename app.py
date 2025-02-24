@@ -34,9 +34,9 @@ MARKET_CARDS = {
         {'id': 'f3', 'name': 'Dense Fuel', 'weight': 5, 'description': 'High energy density fuel', 'icon': 'dense-fuel'}
     ],
     'fairings': [
-        {'id': 'fa1', 'name': 'Standard Fairing', 'weight': 12, 'description': 'Standard protective shell', 'icon': 'standard-fairing'},
-        {'id': 'fa2', 'name': 'Light Fairing', 'weight': 10, 'description': 'Lightweight composite fairing', 'icon': 'light-fairing'},
-        {'id': 'fa3', 'name': 'Heavy Fairing', 'weight': 15, 'description': 'Extra protective fairing', 'icon': 'heavy-fairing'}
+        {'id': 'fair1', 'name': 'Standard Fairing', 'weight': 12, 'description': 'Standard protective shell', 'icon': 'standard-fairing'},
+        {'id': 'fair2', 'name': 'Light Fairing', 'weight': 10, 'description': 'Lightweight composite fairing', 'icon': 'light-fairing'},
+        {'id': 'fair3', 'name': 'Heavy Fairing', 'weight': 15, 'description': 'Extra protective fairing', 'icon': 'heavy-fairing'}
     ],
     'payloads': [
         {'id': 'p1', 'name': 'Satellite', 'weight': 18, 'points': 5, 'description': 'Communication satellite', 'icon': 'satellite'},
@@ -49,7 +49,7 @@ MARKET_CARDS = {
 DEFAULT_CARDS = {
     'engines': {'id': 'e0', 'name': 'Basic Engine', 'thrust': 10, 'weight': 10, 'description': '基本装備のエンジン', 'is_default': True, 'icon': 'basic-engine'},
     'fuel': {'id': 'f0', 'name': 'Basic Fuel', 'weight': 6, 'description': '基本装備の燃料', 'is_default': True, 'icon': 'basic-fuel'},
-    'fairings': {'id': 'fa0', 'name': 'Basic Fairing', 'weight': 15, 'description': '基本装備のフェアリング', 'is_default': True, 'icon': 'basic-fairing'},
+    'fairings': {'id': 'fair0', 'name': 'Basic Fairing', 'weight': 15, 'description': '基本装備のフェアリング', 'is_default': True, 'icon': 'basic-fairing'},
     'payloads': {'id': 'p0', 'name': 'Basic Payload', 'weight': 20, 'points': 3, 'description': '基本装備のペイロード', 'is_default': True, 'icon': 'basic-payload'}
 }
 
