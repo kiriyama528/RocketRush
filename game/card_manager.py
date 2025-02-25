@@ -17,10 +17,10 @@ class JsonCardProvider(CardProvider):
             self.card_data = json.load(f)
 
     def get_market_cards(self):
-        return self.card_data
+        return self.card_data.get('market_cards', {})
 
     def get_default_cards(self):
-        return self.card_data['default_cards']
+        return self.card_data.get('default_cards', {})
 
 class CardManager:
     def __init__(self, provider: CardProvider):
@@ -32,8 +32,12 @@ class CardManager:
         import random
         market = {}
         for card_type, cards in self.market_cards.items():
-            market[card_type] = random.choice(cards)
+            if cards:  # カードリストが空でない場合のみ
+                market[card_type] = random.choice(cards)
         return market
+
+    def get_default_cards(self):
+        return self.default_cards
 
     def get_default_card(self, card_type):
         return self.default_cards.get(card_type)
