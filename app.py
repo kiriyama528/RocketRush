@@ -125,13 +125,13 @@ def remove_card(card_id):
         return jsonify({'error': 'No active game session'}), 400
 
     card_type = None
-    if card_id.startswith('f_'):
+    if card_id.startswith('f'):
         card_type = 'fuel_tanks'
-    elif card_id.startswith('e_'):
+    elif card_id.startswith('e'):
         card_type = 'engines'
-    elif card_id.startswith('fa_'):
+    elif card_id.startswith('fa'):
         card_type = 'fairings'
-    elif card_id.startswith('p_'):
+    elif card_id.startswith('p'):
         card_type = 'payloads'
 
     if card_type:

@@ -1,11 +1,10 @@
-
 document.addEventListener('DOMContentLoaded', function() {
     // カード選択の処理
     document.querySelectorAll('.card-select').forEach(button => {
         button.addEventListener('click', function() {
             const cardType = this.dataset.cardType;
             const cardId = this.dataset.cardId;
-            
+
             fetch(`/select_card/${cardType}/${cardId}`)
                 .then(response => response.json())
                 .then(data => {
@@ -23,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.card-remove').forEach(button => {
         button.addEventListener('click', function() {
             const cardId = this.dataset.cardId;
-            
+
             fetch(`/remove_card/${cardId}`)
                 .then(response => response.json())
                 .then(data => {

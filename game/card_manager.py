@@ -40,10 +40,15 @@ class CardManager:
         return self.default_cards
 
     def get_default_card(self, card_type):
-        cards = self.default_cards.get(card_type)
+        # カードタイプの変換マップ
+        type_map = {
+            'fairings': 'fairings',
+            'payloads': 'payloads',
+            'fuel_tanks': 'fuel',
+            'engines': 'engines'
+        }
+        mapped_type = type_map.get(card_type, card_type)
+        cards = self.default_cards.get(mapped_type)
         if not cards:
             return None
-        if isinstance(cards, list) and cards:
-            # 同じIDのカードが既に選択されていないか確認
-            return cards[0].copy()  # コピーを返して独立したオブジェクトにする
         return cards.copy()  # コピーを返して独立したオブジェクトにする
