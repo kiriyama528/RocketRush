@@ -97,9 +97,22 @@ def game():
 
 @app.route('/select_card/<card_type>/<card_id>')
 def select_card(card_type, card_id):
-    # This function needs significant revision to use the CardManager
-    # Placeholder - needs implementation using card_manager
-    return jsonify({'error': 'Not yet implemented'}), 501
+    if 'hand' not in session:
+        return jsonify({'error': 'No active game session'}), 400
+
+    # 新しいカードを選択する
+    for card in session['market'].values():
+        if card.get('id') == card_id:
+            # 同じタイプの既存のカードを探す
+            hand = session['hand']
+            for i, existing_card in enumerate(hand):
+                if existing_card.get('id', '').startswith(card_type[0]):
+                    # 既存のカードを新しいカードで置き換える
+                    hand[i] = card
+                    session.modified = True
+                    return jsonify({'success': True})
+
+    return jsonify({'error': 'Card not found'}), 404
 
 @app.route('/remove_card/<card_id>')
 def remove_card(card_id):

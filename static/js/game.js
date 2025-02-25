@@ -47,17 +47,15 @@ function attachCardSelectListeners() {
                         this.textContent = '選択済み';
 
                         // 選択したカードを即時反映
-                        return fetch('/game');
+                        location.reload();
                     }
                 })
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const newCards = doc.querySelector('.selected-cards').innerHTML;
-                    document.querySelector('.selected-cards').innerHTML = newCards;
-                    attachCardRemoveListeners();
-                    updateStats();
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    });
+}Stats();
                 });
         });
     });
@@ -104,10 +102,10 @@ function updateStats() {
     let totalPoints = 0;
 
     cards.forEach(card => {
-        const stats = card.querySelector('.card-stats');
-        const thrustMatch = stats.textContent.match(/推力: (\d+)kN/);
-        const weightMatch = stats.textContent.match(/重量: (\d+)kN/);
-        const pointsMatch = stats.textContent.match(/ポイント: (\d+)/);
+        const stats = card.querySelector('.card-stats').textContent;
+        const thrustMatch = stats.match(/推力: (\d+)kN/);
+        const weightMatch = stats.match(/重量: (\d+)kN/);
+        const pointsMatch = stats.match(/ポイント: (\d+)/);
 
         if (thrustMatch) totalThrust += parseInt(thrustMatch[1]);
         if (weightMatch) totalWeight += parseInt(weightMatch[1]);
@@ -121,6 +119,12 @@ function updateStats() {
 
     document.getElementById('weight-bar').style.width = `${(totalWeight / maxValue) * 100}%`;
     document.getElementById('weight-value').textContent = `${totalWeight} kN`;
+
+    document.getElementById('points-bar').style.width = `${(totalPoints / 10) * 100}%`;
+    document.getElementById('points-value').textContent = `${totalPoints} pts`;
+}
+
+document.addEventListener('DOMContentLoaded', updateStats);;
 
     document.getElementById('points-bar').style.width = `${(totalPoints / 10) * 100}%`;
     document.getElementById('points-value').textContent = `${totalPoints} pts`;
