@@ -30,6 +30,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        location.reload(); // ページをリロード
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    });
+
+    // ボタンの初期状態を設定
+    document.querySelectorAll('.card-select').forEach(button => {
+        const cardId = button.dataset.cardId;
+        const selectedCards = document.querySelectorAll('.selected-card');
+        
+        selectedCards.forEach(card => {
+            if (card.dataset.cardId === cardId) {
+                button.textContent = '選択済み';
+                button.classList.add('btn-selected');
+            }
+        });
+    });
                         location.reload();  // ページをリロード
                     }
                 });
