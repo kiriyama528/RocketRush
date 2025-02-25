@@ -51,4 +51,6 @@ class CardManager:
         cards = self.default_cards.get(mapped_type)
         if not cards:
             return None
+        if isinstance(cards, list):
+            return cards[0].copy() if cards else None
         return cards.copy()  # コピーを返して独立したオブジェクトにする
