@@ -5,7 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const cardType = this.dataset.cardType;
             const cardId = this.dataset.cardId;
 
-            fetch(`/select_card/${cardType}/${cardId}`)
+            // カードの種類に応じて適切なprefixを設定
+            let typePrefix = cardType;
+            if (cardType === 'fuel_tanks') typePrefix = 'fuel';
+            
+            fetch(`/select_card/${typePrefix}/${cardId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -14,6 +18,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         this.classList.add('btn-selected');
                         location.reload();  // ページをリロード
                     }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                 });
         });
     });
