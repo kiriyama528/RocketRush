@@ -1,42 +1,92 @@
 
 {
   "market_cards": {
+    "fairings": [
+      {
+        "id": "fa1",
+        "name": "Lightweight Fairing",
+        "weight": 2,
+        "description": "軽量化された先端フェアリング",
+        "icon": "basic-fairing"
+      },
+      {
+        "id": "fa2",
+        "name": "Reinforced Fairing",
+        "weight": 4,
+        "description": "強化された先端フェアリング",
+        "icon": "basic-fairing"
+      }
+    ],
+    "payloads": [
+      {
+        "id": "p1",
+        "name": "Science Payload",
+        "weight": 3,
+        "points": 2,
+        "description": "科学実験装置",
+        "icon": "basic-payload"
+      },
+      {
+        "id": "p2",
+        "name": "Satellite",
+        "weight": 5,
+        "points": 3,
+        "description": "通信衛星",
+        "icon": "basic-payload"
+      }
+    ],
+    "fuel": [
+      {
+        "id": "f1",
+        "name": "High Capacity Tank",
+        "weight": 8,
+        "description": "大容量燃料タンク",
+        "icon": "basic-fuel"
+      },
+      {
+        "id": "f2",
+        "name": "Efficient Tank",
+        "weight": 4,
+        "description": "効率的な燃料タンク",
+        "icon": "basic-fuel"
+      }
+    ],
     "engines": [
       {
         "id": "e1",
         "name": "Standard Engine",
         "thrust": 20,
         "weight": 8,
-        "description": "Standard rocket engine",
-        "icon": "standard-engine"
+        "description": "標準的なエンジン",
+        "icon": "basic-engine"
       },
       {
         "id": "e2",
         "name": "Advanced Engine",
         "thrust": 30,
         "weight": 12,
-        "description": "High performance engine",
-        "icon": "advanced-engine"
-      },
-      {
-        "id": "e3",
-        "name": "Super Engine",
-        "thrust": 40,
-        "weight": 18,
-        "description": "Based on SpaceX Raptor",
-        "icon": "super-engine"
+        "description": "高性能エンジン",
+        "icon": "basic-engine"
       }
     ]
   },
   "default_cards": {
-    "engines": {
-      "id": "e0",
-      "name": "Basic Engine",
-      "thrust": 10,
-      "weight": 10,
-      "description": "基本装備のエンジン",
+    "fairings": {
+      "id": "fa0",
+      "name": "Basic Fairing",
+      "weight": 3,
+      "description": "基本装備のフェアリング",
       "is_default": true,
-      "icon": "basic-engine"
+      "icon": "basic-fairing"
+    },
+    "payloads": {
+      "id": "p0",
+      "name": "Basic Payload",
+      "weight": 0,
+      "points": 0,
+      "description": "空の荷物スペース",
+      "is_default": true,
+      "icon": "basic-payload"
     },
     "fuel": {
       "id": "f0",
@@ -46,13 +96,14 @@
       "is_default": true,
       "icon": "basic-fuel"
     },
-    "fairings": {
-      "id": "fa0",
-      "name": "Basic Fairing",
-      "weight": 3,
-      "description": "基本装備のフェアリング",
+    "engines": {
+      "id": "e0",
+      "name": "Basic Engine",
+      "thrust": 10,
+      "weight": 10,
+      "description": "基本装備のエンジン",
       "is_default": true,
-      "icon": "basic-fairing"
+      "icon": "basic-engine"
     }
   }
 }

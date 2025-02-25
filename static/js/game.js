@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (data.success) {
                             this.classList.remove('btn-selected');
                             this.textContent = '選択';
-                            
+
                             const selectedArea = document.querySelector('.selected-cards');
                             return fetch('/game');
                         }
@@ -135,12 +135,12 @@ function updateStats() {
     selectedCards.forEach(card => {
         const stats = card.querySelector('.card-stats').textContent;
 
-        const thrustMatch = stats.match(/推力: (\d+)/);
+        const thrustMatch = stats.match(/推力: (\d+)kN/); //Added kN to match regex in updateProgressBars
         if (thrustMatch) {
             totalThrust += parseInt(thrustMatch[1]);
         }
 
-        const weightMatch = stats.match(/重量: (\d+)/);
+        const weightMatch = stats.match(/重量: (\d+)kN/); //Added kN to match regex in updateProgressBars
         if (weightMatch) {
             totalWeight += parseInt(weightMatch[1]);
         }
@@ -161,4 +161,40 @@ function updateStats() {
 
     document.querySelector('#points-bar').style.width = `${(totalPoints / 20) * 100}%`;
     document.querySelector('#points-value').textContent = `${totalPoints} pts`;
+}
+
+function updateProgressBars() {
+    const cards = document.querySelectorAll('.selected-cards .game-card');
+    let totalThrust = 0;
+    let totalWeight = 0;
+    let totalPoints = 0;
+
+    cards.forEach(card => {
+        const stats = card.querySelector('.card-stats').textContent;
+        const thrustMatch = stats.match(/推力: (\d+)kN/);
+        const weightMatch = stats.match(/重量: (\d+)kN/);
+        const pointsMatch = stats.match(/ポイント: (\d+)/);
+
+        if (thrustMatch) totalThrust += parseInt(thrustMatch[1]);
+        if (weightMatch) totalWeight += parseInt(weightMatch[1]);
+        if (pointsMatch) totalPoints += parseInt(pointsMatch[1]);
+    });
+
+    // Update thrust bar
+    const thrustBar = document.getElementById('thrust-bar');
+    const thrustValue = document.getElementById('thrust-value');
+    thrustBar.style.width = `${(totalThrust / 200) * 100}%`;
+    thrustValue.textContent = `${totalThrust} kN`;
+
+    // Update weight bar
+    const weightBar = document.getElementById('weight-bar');
+    const weightValue = document.getElementById('weight-value');
+    weightBar.style.width = `${(totalWeight / 200) * 100}%`;
+    weightValue.textContent = `${totalWeight} kN`;
+
+    // Update points bar
+    const pointsBar = document.getElementById('points-bar');
+    const pointsValue = document.getElementById('points-value');
+    pointsBar.style.width = `${(totalPoints / 20) * 100}%`;
+    pointsValue.textContent = `${totalPoints} pts`;
 }

@@ -96,7 +96,9 @@
         <div class="mt-4">
             <h3>選択したカード</h3>
             <div class="row selected-cards">
-                {% for card in hand %}
+                {% set part_order = ['fairings', 'payloads', 'fuel', 'engines'] %}
+                {% for part_type in part_order %}
+                    {% for card in hand if card.id.startswith(part_type[0]) %}
                 <div class="col-md-6 mb-4">
                     <div class="game-card" data-card-type="{{ card.id.split('_')[0] if '_' in card.id else card.id[:4] }}">
                         <div class="card-header">
@@ -121,6 +123,7 @@
                         {% endif %}
                     </div>
                 </div>
+                {% endfor %}
                 {% endfor %}
             </div>
         </div>
