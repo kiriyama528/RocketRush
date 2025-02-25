@@ -4,12 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const cardType = this.dataset.cardType;
             const cardId = this.dataset.cardId;
-
-            // カードの種類に応じて適切なprefixを設定
-            let typePrefix = cardType;
-            if (cardType === 'fuel_tanks') typePrefix = 'fuel';
             
-            fetch(`/select_card/${typePrefix}/${cardId}`)
+            fetch(`/select_card/${cardType}/${cardId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {

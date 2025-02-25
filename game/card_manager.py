@@ -48,11 +48,15 @@ class CardManager:
             'engines': 'engines'
         }
         mapped_type = type_map.get(card_type, card_type)
-        cards = self.default_cards.get(mapped_type)
+        cards = self.default_cards.get(mapped_type, [])
         
-        if not cards or not isinstance(cards, list) or not cards:
+        if not cards:
             return None
             
         # 基本カードを探す（IDがbasicで始まるもの）
-        basic_card = next((card for card in cards if card['id'].startswith('basic')), None)
-        return basic_card.copy() if basic_card else cards[0].copy()
+        for card in cards:
+            if card['id'].startswith('basic'):
+                return card.copy()
+        
+        # 基本カードが見つからない場合は最初のカードを返す
+        return cards[0].copy() if cards else None
