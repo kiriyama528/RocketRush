@@ -44,7 +44,7 @@ class CardManager:
         type_map = {
             'fairings': 'fairings',
             'payloads': 'payloads',
-            'fuel_tanks': 'fuel',
+            'fuel': 'fuel',
             'engines': 'engines'
         }
         mapped_type = type_map.get(card_type, card_type)
