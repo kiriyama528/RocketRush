@@ -41,8 +41,9 @@ class CardManager:
 
     def get_default_card(self, card_type):
         cards = self.default_cards.get(card_type)
-        if isinstance(cards, dict):
-            return cards
-        elif isinstance(cards, list) and cards:
-            return cards[0]
-        return None
+        if not cards:
+            return None
+        if isinstance(cards, list) and cards:
+            # 同じIDのカードが既に選択されていないか確認
+            return cards[0].copy()  # コピーを返して独立したオブジェクトにする
+        return cards.copy()  # コピーを返して独立したオブジェクトにする

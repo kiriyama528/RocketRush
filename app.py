@@ -121,9 +121,30 @@ def select_card(card_type, card_id):
 
 @app.route('/remove_card/<card_id>')
 def remove_card(card_id):
-    # This function needs significant revision to use the CardManager
-    # Placeholder - needs implementation using card_manager
-    return jsonify({'error': 'Not yet implemented'}), 501
+    if 'hand' not in session:
+        return jsonify({'error': 'No active game session'}), 400
+
+    card_type = None
+    if card_id.startswith('f_'):
+        card_type = 'fuel_tanks'
+    elif card_id.startswith('e_'):
+        card_type = 'engines'
+    elif card_id.startswith('fa_'):
+        card_type = 'fairings'
+    elif card_id.startswith('p_'):
+        card_type = 'payloads'
+
+    if card_type:
+        default_card = card_manager.get_default_card(card_type)
+        if default_card:
+            hand = session['hand']
+            for i, card in enumerate(hand):
+                if card.get('id') == card_id:
+                    hand[i] = default_card
+                    session.modified = True
+                    return jsonify({'success': True})
+
+    return jsonify({'error': 'Card not found'}), 404
 
 @app.route('/launch_rocket', methods=['POST'])
 def launch_rocket():
