@@ -1,30 +1,6 @@
-function attachCardRemoveListeners() {
-    document.querySelectorAll('.card-remove').forEach(button => {
-        button.addEventListener('click', function() {
-            const cardId = this.dataset.cardId;
-            fetch(`/remove_card/${cardId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        return fetch('/game');
-                    }
-                })
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const newCards = doc.querySelector('.selected-cards').innerHTML;
-                    document.querySelector('.selected-cards').innerHTML = newCards;
-                    updateStats();
-                });
-        });
-    });
-}
-
 document.addEventListener('DOMContentLoaded', function() {
-    updateStats();
     attachCardSelectListeners();
-    attachCardRemoveListeners();
+    updateStats();
     attachLaunchListener();
 });
 
@@ -38,59 +14,12 @@ function attachCardSelectListeners() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // 選択状態を更新
-                        document.querySelectorAll(`.card-select[data-card-type="${cardType}"]`).forEach(btn => {
-                            btn.classList.remove('btn-selected');
-                            btn.textContent = '選択';
-                        });
-                        this.classList.add('btn-selected');
-                        this.textContent = '選択済み';
-
-                        // 選択したカードを即時反映
-                        location.reload();
+                        window.location.reload();
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
                 });
-        });
-    });
-}Stats();
-                });
-        });
-    });
-}
-
-
-function attachLaunchListener() {
-    document.getElementById('launch-button').addEventListener('click', function() {
-        fetch('/launch_rocket', {
-            method: 'POST'
-        })
-        .then(response => response.json())
-        .then(data => {
-            const resultDiv = document.getElementById('launch-result');
-            if (data.success) {
-                resultDiv.innerHTML = `
-                    <div class="alert alert-success">
-                        発射成功！ スコア: ${data.score} (ラウンド ${data.round}/5)
-                    </div>
-                `;
-            } else {
-                resultDiv.innerHTML = `
-                    <div class="alert alert-danger">
-                        発射失敗... もう一度試してみましょう
-                    </div>
-                `;
-            }
-
-            // アニメーション表示
-            const animation = document.getElementById('rocket-animation');
-            animation.classList.remove('d-none');
-            setTimeout(() => {
-                animation.classList.add('d-none');
-                window.location.reload();
-            }, 3000);
         });
     });
 }
@@ -113,19 +42,26 @@ function updateStats() {
     });
 
     // プログレスバーの更新
-    const maxValue = 200; // 最大値の設定
-    document.getElementById('thrust-bar').style.width = `${(totalThrust / maxValue) * 100}%`;
+    document.getElementById('thrust-bar').style.width = `${(totalThrust / 200) * 100}%`;
     document.getElementById('thrust-value').textContent = `${totalThrust} kN`;
 
-    document.getElementById('weight-bar').style.width = `${(totalWeight / maxValue) * 100}%`;
+    document.getElementById('weight-bar').style.width = `${(totalWeight / 200) * 100}%`;
     document.getElementById('weight-value').textContent = `${totalWeight} kN`;
 
     document.getElementById('points-bar').style.width = `${(totalPoints / 10) * 100}%`;
     document.getElementById('points-value').textContent = `${totalPoints} pts`;
 }
 
-document.addEventListener('DOMContentLoaded', updateStats);;
-
-    document.getElementById('points-bar').style.width = `${(totalPoints / 10) * 100}%`;
-    document.getElementById('points-value').textContent = `${totalPoints} pts`;
+// Launch button functionality
+function attachLaunchListener() {
+    document.getElementById('launch-button').addEventListener('click', function() {
+        fetch('/launch_rocket', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            window.location.reload();
+        })
+        .catch(error => console.error('Error:', error));
+    });
 }

@@ -37,14 +37,7 @@ class CardManager:
         return market
 
     def get_default_cards(self):
-        # 各種類のカードを1つずつ返す
-        default_cards = {}
-        for card_type, card in self.default_cards.items():
-            if isinstance(card, dict):
-                default_cards[card_type] = card
-            elif isinstance(card, list) and card:
-                default_cards[card_type] = card[0]
-        return default_cards
+        return self.default_cards
 
     def get_default_card(self, card_type):
         cards = self.default_cards.get(card_type)
