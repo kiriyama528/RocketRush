@@ -77,7 +77,7 @@ def new_game():
     session['round'] = 1
     session['hand'] = []
     # 各タイプの基本カードを追加
-    for card_type in ['fairings', 'payloads', 'fuel_tanks', 'engines']:
+    for card_type in ['fairings', 'payloads', 'fuel', 'engines']:
         card = card_manager.get_default_card(card_type)
         if card:
             session['hand'].append(card)
