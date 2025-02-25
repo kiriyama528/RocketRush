@@ -76,11 +76,14 @@ def new_game():
     session['score'] = 0
     session['round'] = 1
     session['hand'] = []
-    # 各タイプのカードを1つずつ追加
+    # 各タイプのカードを1つずつ追加（重複を防ぐ）
+    added_types = set()
     for card_type in ['fairings', 'payloads', 'fuel_tanks', 'engines']:
-        card = card_manager.get_default_card(card_type)
-        if card:
-            session['hand'].append(card)
+        if card_type not in added_types:
+            card = card_manager.get_default_card(card_type)
+            if card:
+                session['hand'].append(card)
+                added_types.add(card_type)
     session['market'] = card_manager.generate_market() #Using CardManager
     session['current_mission'] = mission_manager.get_random_mission() #Using MissionManager
     session['selected_cards'] = {} # Initialize selected_cards
