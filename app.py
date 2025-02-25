@@ -76,12 +76,11 @@ def new_game():
     session['score'] = 0
     session['round'] = 1
     session['hand'] = []
-    default_cards = card_manager.get_default_cards()
-    for card_type, card in default_cards.items():
-        if isinstance(card, dict):
+    # 各タイプのカードを1つずつ追加
+    for card_type in ['fairings', 'payloads', 'fuel_tanks', 'engines']:
+        card = card_manager.get_default_card(card_type)
+        if card:
             session['hand'].append(card)
-        elif isinstance(card, list) and card:
-            session['hand'].append(card[0])
     session['market'] = card_manager.generate_market() #Using CardManager
     session['current_mission'] = mission_manager.get_random_mission() #Using MissionManager
     session['selected_cards'] = {} # Initialize selected_cards
@@ -152,12 +151,11 @@ def launch_rocket():
 
     # 次のラウンドの準備（基本装備を初期化）
     session['hand'] = []
-    default_cards = card_manager.get_default_cards()
-    for card_type, card in default_cards.items():
-        if isinstance(card, dict):
+    # 各タイプのカードを1つずつ追加
+    for card_type in ['fairings', 'payloads', 'fuel_tanks', 'engines']:
+        card = card_manager.get_default_card(card_type)
+        if card:
             session['hand'].append(card)
-        elif isinstance(card, list) and card:
-            session['hand'].append(card[0])
     session['market'] = card_manager.generate_market() #Using CardManager
     session['current_mission'] = mission_manager.get_random_mission() #Using MissionManager
     session['selected_cards'] = {}  # 選択状態をリセット

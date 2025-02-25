@@ -14,14 +14,8 @@ function attachCardSelectListeners() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // 選択状態を更新
-                        document.querySelectorAll(`.card-select[data-card-type="${cardType}"]`).forEach(btn => {
-                            btn.classList.remove('btn-selected');
-                            btn.textContent = '選択';
-                        });
-                        this.classList.add('btn-selected');
-                        this.textContent = '選択済み';
-                        window.location.reload();
+                        // 選択したカードの情報を更新し、ページをリロード
+                        location.reload();
                     }
                 })
                 .catch(error => {
