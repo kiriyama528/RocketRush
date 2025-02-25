@@ -1,31 +1,33 @@
 
 {
-  "engines": [
-    {
-      "id": "e1",
-      "name": "Standard Engine",
-      "thrust": 20,
-      "weight": 8,
-      "description": "Standard rocket engine",
-      "icon": "standard-engine"
-    },
-    {
-      "id": "e2",
-      "name": "Advanced Engine",
-      "thrust": 30,
-      "weight": 12,
-      "description": "High performance engine",
-      "icon": "advanced-engine"
-    },
-    {
-      "id": "e3",
-      "name": "Super Engine",
-      "thrust": 40,
-      "weight": 18,
-      "description": "Based on SpaceX Raptor",
-      "icon": "super-engine"
-    }
-  ],
+  "market_cards": {
+    "engines": [
+      {
+        "id": "e1",
+        "name": "Standard Engine",
+        "thrust": 20,
+        "weight": 8,
+        "description": "Standard rocket engine",
+        "icon": "standard-engine"
+      },
+      {
+        "id": "e2",
+        "name": "Advanced Engine",
+        "thrust": 30,
+        "weight": 12,
+        "description": "High performance engine",
+        "icon": "advanced-engine"
+      },
+      {
+        "id": "e3",
+        "name": "Super Engine",
+        "thrust": 40,
+        "weight": 18,
+        "description": "Based on SpaceX Raptor",
+        "icon": "super-engine"
+      }
+    ]
+  },
   "default_cards": {
     "engines": {
       "id": "e0",
@@ -35,6 +37,22 @@
       "description": "基本装備のエンジン",
       "is_default": true,
       "icon": "basic-engine"
+    },
+    "fuel": {
+      "id": "f0",
+      "name": "Basic Fuel Tank",
+      "weight": 5,
+      "description": "基本装備の燃料タンク",
+      "is_default": true,
+      "icon": "basic-fuel"
+    },
+    "fairings": {
+      "id": "fa0",
+      "name": "Basic Fairing",
+      "weight": 3,
+      "description": "基本装備のフェアリング",
+      "is_default": true,
+      "icon": "basic-fairing"
     }
   }
 }

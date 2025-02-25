@@ -32,7 +32,7 @@ class CardManager:
         import random
         market = {}
         for card_type, cards in self.market_cards.items():
-            if cards:  # カードリストが空でない場合のみ
+            if isinstance(cards, list) and cards:  # カードリストが存在し空でない場合のみ
                 market[card_type] = random.choice(cards)
         return market
 
