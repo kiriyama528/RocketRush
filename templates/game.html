@@ -100,7 +100,7 @@
                 {% for part_type in part_order %}
                     {% for card in hand if card.id.startswith(part_type[0]) %}
                 <div class="col-md-6 mb-4">
-                    <div class="game-card" data-card-type="{{ card.id.split('_')[0] if '_' in card.id else card.id[:4] }}">
+                    <div class="game-card" data-card-type="{{ card.id.split('_')[0] }}">
                         <div class="card-header">
                             <h4>{{ card.name }}</h4>
                             {% include 'icons/' + card.icon + '.svg' %}
