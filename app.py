@@ -145,6 +145,9 @@ def remove_card(card_id):
             for i, card in enumerate(hand):
                 if card.get('id') == card_id:
                     hand[i] = default_card
+                    # 選択状態を更新
+                    if 'selected_cards' in session and card_type in session['selected_cards']:
+                        del session['selected_cards'][card_type]
                     session.modified = True
                     return jsonify({'success': True})
 
