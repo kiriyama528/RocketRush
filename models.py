@@ -14,7 +14,7 @@ class Card(db.Model):
     """カード情報を管理するモデル"""
     id = db.Column(db.Integer, primary_key=True)
     card_id = db.Column(db.String(16), unique=True, nullable=False)
-    type = db.Column(db.String(32), nullable=False)  # engine, fuel, fairing, payload
+    type = db.Column(db.String(32), nullable=False)  # engine, tank, fairing, payload
     name = db.Column(db.String(64), nullable=False)
     thrust = db.Column(db.Integer, nullable=True)
     weight = db.Column(db.Integer, nullable=False)

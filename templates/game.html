@@ -96,7 +96,7 @@
         <div class="mt-4">
             <h3>選択したカード</h3>
             <div class="row selected-cards">
-                {% set part_order = ['fairings', 'payloads', 'fuel', 'engines'] %}
+                {% set part_order = ['fairings', 'payloads', 'tank', 'engines'] %}
                 {% for part_type in part_order %}
                     {% for card in hand if card.id.startswith(part_type[0]) %}
                 <div class="col-md-6 mb-4">

@@ -100,7 +100,7 @@
     border-left: 4px solid var(--bs-danger);
 }
 
-.card-fuel {
+.card-tank {
     border-left: 4px solid var(--bs-warning);
 }
 

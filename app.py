@@ -77,7 +77,7 @@ def new_game():
     session['round'] = 1
     session['hand'] = []
     # 各タイプの基本カードを追加
-    for card_type in ['fairings', 'payloads', 'fuel', 'engines']:
+    for card_type in ['fairings', 'payloads', 'tank', 'engines']:
         card = card_manager.get_default_card(card_type)
         if card:
             session['hand'].append(card)
@@ -125,8 +125,8 @@ def remove_card(card_id):
         return jsonify({'error': 'No active game session'}), 400
 
     card_type = None
-    if card_id.startswith('f'):
-        card_type = 'fuel_tanks'
+    if card_id.startswith('t'):
+        card_type = 'tank'
     elif card_id.startswith('e'):
         card_type = 'engines'
     elif card_id.startswith('fa'):
