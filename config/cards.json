@@ -35,20 +35,20 @@
         "icon": "basic-payload"
       }
     ],
-    "fuel": [
+    "tank": [
       {
-        "id": "f1",
+        "id": "t1",
         "name": "High Capacity Tank",
         "weight": 8,
-        "description": "大容量燃料タンク",
-        "icon": "basic-fuel"
+        "description": "大容量タンク",
+        "icon": "basic-tank"
       },
       {
-        "id": "f2",
+        "id": "t2",
         "name": "Efficient Tank",
         "weight": 4,
-        "description": "効率的な燃料タンク",
-        "icon": "basic-fuel"
+        "description": "効率的なタンク",
+        "icon": "basic-tank"
       }
     ],
     "engines": [
@@ -88,13 +88,13 @@
       "is_default": true,
       "icon": "basic-payload"
     },
-    "fuel": {
-      "id": "f0",
-      "name": "Basic Fuel Tank",
+    "tank": {
+      "id": "t0",
+      "name": "Basic Tank",
       "weight": 5,
-      "description": "基本装備の燃料タンク",
+      "description": "基本装備のタンク",
       "is_default": true,
-      "icon": "basic-fuel"
+      "icon": "basic-tank"
     },
     "engines": {
       "id": "e0",
