@@ -54,18 +54,98 @@
     "engines": [
       {
         "id": "e1",
-        "name": "Standard Engine",
-        "thrust": 20,
-        "weight": 8,
-        "description": "標準的なエンジン",
+        "name": "イオンエンジン",
+        "thrust": 15,
+        "weight": 5,
+        "description": "軽量で効率的な宇宙用エンジン",
         "icon": "basic-engine"
       },
       {
         "id": "e2",
-        "name": "Advanced Engine",
+        "name": "ソリッドブースター",
+        "thrust": 40,
+        "weight": 20,
+        "description": "高推力だが重い固体燃料エンジン",
+        "icon": "basic-engine"
+      },
+      {
+        "id": "e3",
+        "name": "デュアルモードエンジン",
+        "thrust": 25,
+        "weight": 10,
+        "description": "大気圏内外で性能を切り替えられる",
+        "icon": "basic-engine"
+      },
+      {
+        "id": "e4",
+        "name": "核熱推進エンジン",
+        "thrust": 35,
+        "weight": 15,
+        "description": "長時間作動可能な原子力エンジン",
+        "icon": "basic-engine"
+      },
+      {
+        "id": "e5",
+        "name": "パルスデトネーションエンジン",
+        "thrust": 45,
+        "weight": 18,
+        "description": "爆発的な推力を生み出す先進エンジン",
+        "icon": "basic-engine"
+      },
+      {
+        "id": "e6",
+        "name": "電磁加速エンジン",
+        "thrust": 20,
+        "weight": 8,
+        "description": "電磁力で推進剤を加速する",
+        "icon": "basic-engine"
+      },
+      {
+        "id": "e7",
+        "name": "クラスター型エンジン",
+        "thrust": 50,
+        "weight": 25,
+        "description": "複数の小型エンジンを束ねた構成",
+        "icon": "basic-engine"
+      },
+      {
+        "id": "e8",
+        "name": "可変推力エンジン",
         "thrust": 30,
         "weight": 12,
-        "description": "高性能エンジン",
+        "description": "状況に応じて推力を調整可能",
+        "icon": "basic-engine"
+      },
+      {
+        "id": "e9",
+        "name": "超小型精密エンジン",
+        "thrust": 10,
+        "weight": 3,
+        "description": "精密な軌道修正用の小型エンジン",
+        "icon": "basic-engine"
+      },
+      {
+        "id": "e10",
+        "name": "ハイブリッドエンジン",
+        "thrust": 28,
+        "weight": 14,
+        "description": "固体燃料と液体酸化剤を組み合わせた方式",
+        "icon": "basic-engine"
+      },
+      {
+        "id": "e11",
+        "name": "エアーブリージングエンジン",
+        "thrust": 38,
+        "weight": 16,
+        "description": "大気中の酸素を利用する高効率エンジン",
+        "icon": "basic-engine"
+      },
+      {
+        "id": "e12",
+        "name": "プラズマエンジン",
+        "thrust": 22,
+        "weight": 9,
+        "description": "プラズマを利用した次世代推進システム",
         "icon": "basic-engine"
       }
     ]
