@@ -6,19 +6,35 @@ document.addEventListener('DOMContentLoaded', function() {
             const cardType = this.dataset.cardType;
             const cardId = this.dataset.cardId;
             
-            fetch(`/select_card/${cardType}/${cardId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // ボタンのテキストを「選択済み」に変更
-                        this.textContent = '選択済み';
-                        this.classList.add('btn-selected');
-                        location.reload();  // ページをリロード
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+            // すでに選択済みの場合は基本装備に戻す
+            if (this.classList.contains('btn-selected')) {
+                fetch(`/remove_card/${cardId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.textContent = '選択';
+                            this.classList.remove('btn-selected');
+                            location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            } else {
+                // 新しく選択する場合
+                fetch(`/select_card/${cardType}/${cardId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.textContent = '選択済み';
+                            this.classList.add('btn-selected');
+                            location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
         });
     });
 
@@ -31,7 +47,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        location.reload(); // ページをリロード
+                        // 対応するカードマーケットのボタンを「選択」状態に戻す
+                        document.querySelectorAll('.card-select').forEach(selectButton => {
+                            if (selectButton.dataset.cardId === cardId) {
+                                selectButton.textContent = '選択';
+                                selectButton.classList.remove('btn-selected');
+                            }
+                        });
+                        location.reload();
                     }
                 })
                 .catch(error => {
