@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function() {
     // カード選択の処理
     document.querySelectorAll('.card-select').forEach(button => {
@@ -49,11 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 button.textContent = '選択済み';
                 button.classList.add('btn-selected');
             }
-        });
-    });
-                        location.reload();  // ページをリロード
-                    }
-                });
         });
     });
 
