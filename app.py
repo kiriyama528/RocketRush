@@ -114,6 +114,10 @@ def select_card(card_type, card_id):
                 if existing_card.get('id', '').startswith(card_type[0]):
                     # 既存のカードを新しいカードで置き換える
                     hand[i] = card
+                    # 選択状態を更新
+                    if 'selected_cards' not in session:
+                        session['selected_cards'] = {}
+                    session['selected_cards'][card_type] = card_id
                     session.modified = True
                     return jsonify({'success': True})
 
